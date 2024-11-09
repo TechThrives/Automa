@@ -1,0 +1,33 @@
+package com.automa.entity;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.UUID;
+
+@Data
+@Entity
+@Table(name = "workflow")
+@AllArgsConstructor
+@NoArgsConstructor
+public class Workflow {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(nullable = false, updatable = false, unique = true)
+    private UUID id;
+
+    private String name;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // One Trigger can be associated with one Workflow
+    @JoinColumn(name = "trigger_id", nullable = false) // Foreign key for the trigger
+    private Trigger trigger;
+
+    @OneToMany(mappedBy = "workflow", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // One workflow can have many actions
+    private List<Action> actions;
+
+    private Boolean isActive = true;
+}
