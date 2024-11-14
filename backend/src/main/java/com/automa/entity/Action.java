@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+import com.automa.entity.converter.JsonNodeConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @Data
 @Entity
 @Table(name = "actions")
-@JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Action {
@@ -30,6 +30,8 @@ public class Action {
     private String description;
 
     @Column(columnDefinition = "jsonb", nullable = false)
+    @Convert(converter = JsonNodeConverter.class)  // Apply the converter here
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private JsonNode config;
 
     @ManyToOne(fetch = FetchType.LAZY) // Each action is linked to one workflow

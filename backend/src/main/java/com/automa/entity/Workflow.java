@@ -22,6 +22,10 @@ public class Workflow {
 
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY) // Many workflows can belong to one user
+    @JoinColumn(name = "user_id", nullable = false)
+    private ApplicationUser user;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // One Trigger can be associated with one Workflow
     @JoinColumn(name = "trigger_id", nullable = false) // Foreign key for the trigger
     private Trigger trigger;

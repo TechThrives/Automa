@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+import com.automa.entity.converter.JsonNodeConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @Data
 @Entity
 @Table(name = "triggers")
-@JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Trigger {
@@ -27,8 +27,10 @@ public class Trigger {
     private String name;
 
     @Column(columnDefinition = "jsonb", nullable = false)
+    @Convert(converter = JsonNodeConverter.class)  // Apply the converter here
+    @JsonIgnoreProperties(ignoreUnknown = true)
     private JsonNode config;
 
-    @OneToOne(mappedBy = "workflow")
+    @OneToOne(mappedBy = "trigger", fetch = FetchType.LAZY)
     private Workflow workflow;
 }
