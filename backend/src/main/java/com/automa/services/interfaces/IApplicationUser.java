@@ -1,9 +1,14 @@
 package com.automa.services.interfaces;
 
 import java.util.List;
+import java.util.UUID;
 
-import com.automa.entity.ApplicationUser;
+import com.automa.dto.applicationuser.ApplicationUserResponse;
 
 public interface IApplicationUser {
-    List<ApplicationUser> getAll();
+    
+    List<ApplicationUserResponse> getAll();
+    ApplicationUserResponse findByUsername(String username);
+    ApplicationUserResponse findById(UUID userId);
+
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.automa.entity.ApplicationUser;
+import com.automa.dto.applicationuser.ApplicationUserResponse;
 import com.automa.services.interfaces.IApplicationUser;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,10 +26,8 @@ public class ApplicationUserController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<ApplicationUser>> getUsers(HttpServletRequest request) {
-
-        List<ApplicationUser> users = applicationUserService.getAll();
-
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public ResponseEntity<List<ApplicationUserResponse>> getUsers(HttpServletRequest request) {
+        return new ResponseEntity<>(applicationUserService.getAll(), HttpStatus.OK);
     }
+
 }

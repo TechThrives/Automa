@@ -9,6 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.automa.entity.credential.Credential;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -58,7 +60,7 @@ public class ApplicationUser implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)  // One user can have many payments
     private List<Payment> payments;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)  // One user can have many credentials
+    @OneToMany(mappedBy = "user")  // One user can have many credentials
     private List<Credential> credentials;
 
     @Column(nullable = false)

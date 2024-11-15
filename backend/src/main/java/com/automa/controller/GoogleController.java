@@ -41,7 +41,7 @@ public class GoogleController {
             ResponseUtils.sendJsonResponse(response, new MessageResponse("Invalid request"));
 
         } catch (Exception e) {
-            ResponseUtils.sendJsonResponse(response, new MessageResponse("An error occurred"));
+            ResponseUtils.sendJsonResponse(response, new MessageResponse("An error occurred"+e.getMessage()));
         }
     }
 }

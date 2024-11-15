@@ -12,14 +12,14 @@ import com.automa.services.interfaces.ICredential;
 @RequestMapping("/api/credential")
 public class CredentialController {
 
-    private final ICredential credentialService;
+    // private final ICredential credentialService;
 
-    public CredentialController(ICredential credentialService) {
-        this.credentialService = credentialService;
-    }
+    // public CredentialController(ICredential credentialService) {
+    //     this.credentialService = credentialService;
+    // }
 
-    @GetMapping("/path")
-    public String getMethodName() {
-        return new String();
-    }
+    // @GetMapping("/path")
+    // public String getMethodName() {
+    //     return new String();
+    // }
 }

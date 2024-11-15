@@ -2,12 +2,17 @@ package com.automa.services.implementation;
 
 import java.io.IOException;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.automa.config.GoogleConfig;
 import com.automa.dto.MessageResponse;
+import com.automa.dto.credential.GoogleCredentialDto;
+import com.automa.entity.credential.CredentialType;
+import com.automa.repository.ApplicationUserRepository;
+import com.automa.entity.ApplicationUser;
 import com.automa.services.interfaces.IGoogle;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleTokenResponse;
@@ -23,18 +28,42 @@ import lombok.NoArgsConstructor;
 public class GoogleService implements IGoogle {
 
     private final GoogleConfig googleConfig;
+    private final ApplicationUserRepository applicationUserRepository;
+    private final JwtService jwtService;
+    private final CredentialService credentialService;
 
-    public GoogleService(GoogleConfig googleConfig) {
+    public GoogleService(GoogleConfig googleConfig,
+            ApplicationUserRepository applicationUserRepository,
+            CredentialService credentialService,
+            JwtService jwtService) {
         this.googleConfig = googleConfig;
+        this.applicationUserRepository = applicationUserRepository;
+        this.jwtService = jwtService;
+        this.credentialService = credentialService;
     }
 
     @Override
     public MessageResponse googleCallback(String code, HttpServletRequest request) {
         try {
 
-            GoogleTokenResponse tokenResponse = googleConfig.exchangeCodeForToken(code);
+            String token = jwtService.extractJwtTokenFromCookies(request);
 
-            //TODO: Store access token in the database
+            if (token != null) {
+
+                String username = jwtService.extractUsername(token);
+
+                GoogleTokenResponse tokenResponse = googleConfig.exchangeCodeForToken(code);
+
+                GoogleCredentialDto credentialDto = new GoogleCredentialDto();
+
+                BeanUtils.copyProperties(tokenResponse, credentialDto);
+                credentialDto.setExpiresIn(tokenResponse.getExpiresInSeconds());
+
+                ApplicationUser user = applicationUserRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User Not Found!!!"));
+
+                credentialService.createOrUpdateCredential(user, CredentialType.GOOGLE, credentialDto);
+            }
+
             return new MessageResponse("success");
 
         } catch (IOException e) {
