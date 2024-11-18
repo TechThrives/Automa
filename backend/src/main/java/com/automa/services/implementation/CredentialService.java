@@ -1,9 +1,7 @@
 package com.automa.services.implementation;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import com.automa.dto.credential.GoogleCredentialDto;
 import com.automa.entity.ApplicationUser;
 import com.automa.entity.credential.Credential;
 import com.automa.entity.credential.CredentialType;
@@ -14,6 +12,7 @@ import com.automa.repository.GithubCredentialRepository;
 import com.automa.repository.GoogleCredentialRepository;
 import com.automa.services.interfaces.ICredential;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,7 +25,7 @@ public class CredentialService implements ICredential {
     private final GithubCredentialRepository githubCredentialRepository;
 
     public CredentialService(CredentialRepository credentialRepository,
-            GoogleCredentialRepository GoogleRepository, 
+            GoogleCredentialRepository GoogleRepository,
             GithubCredentialRepository GithubRepository) {
         this.credentialRepository = credentialRepository;
         this.googleCredentialRepository = GoogleRepository;
@@ -54,7 +53,22 @@ public class CredentialService implements ICredential {
 
     @Override
     public Credential createOrUpdateCredential(ApplicationUser user, CredentialType credentialType,
-            Object credentialDto) {
+            HashMap<String, Object> credentialDto) {
+
+        String email = (String) credentialDto.get("email");
+
+        if (credentialType == CredentialType.GOOGLE) {
+            Optional<Google> existingGoogleCredential = googleCredentialRepository.findByEmail(email);
+
+            if (existingGoogleCredential.isPresent()) {
+                Google googleCredential = existingGoogleCredential.get();
+
+                if (!googleCredential.getUser().equals(user)) {
+                    throw new RuntimeException("This Google account is already connected to another user.");
+                }
+            }
+        }
+
         Optional<Credential> optionalCredential = credentialRepository.findByUserAndCredentialType(user,
                 credentialType);
 
@@ -62,17 +76,27 @@ public class CredentialService implements ICredential {
             Credential existingCredential = optionalCredential.get();
 
             if (credentialType == CredentialType.GOOGLE) {
-                
+
                 Google existingGoogle = (Google) existingCredential;
-                GoogleCredentialDto googleDetails = (GoogleCredentialDto) credentialDto;
-                
-                BeanUtils.copyProperties(googleDetails, existingGoogle);
+                HashMap<String, Object> googleDetails = new HashMap<>(credentialDto);
+
+                existingGoogle.setEmail((String) googleDetails.get("email"));
+                existingGoogle.setAccessToken((String) googleDetails.get("accessToken"));
+                existingGoogle.setRefreshToken((String) googleDetails.get("refreshToken"));
+                existingGoogle.setExpiresInSeconds((Long) googleDetails.get("expiresInSeconds"));
+                existingGoogle.setScope((String) googleDetails.get("scope"));
+
                 return googleCredentialRepository.save(existingGoogle);
-                
+
             } else if (credentialType == CredentialType.GITHUB) {
                 Github existingGithub = (Github) existingCredential;
-                Github githubDetails = (Github) credentialDto;
-                BeanUtils.copyProperties(githubDetails, existingGithub);
+
+                HashMap<String, Object> githubDetails = new HashMap<>(credentialDto);
+
+                existingGithub.setEmail((String) githubDetails.get("email"));
+                existingGithub.setAccess((String) githubDetails.get("access"));
+                existingGithub.setRefresh((String) githubDetails.get("refresh"));
+
                 return githubCredentialRepository.save(existingGithub);
             }
         } else {
@@ -80,20 +104,29 @@ public class CredentialService implements ICredential {
                 System.out.println(credentialDto);
 
                 Google google = new Google();
-                GoogleCredentialDto googleDetails = (GoogleCredentialDto) credentialDto;
+                HashMap<String, Object> googleDetails = new HashMap<>(credentialDto);
 
                 google.setUser(user);
                 google.setCredentialType(credentialType);
 
-                BeanUtils.copyProperties(googleDetails, google);
-                
+                google.setEmail((String) googleDetails.get("email"));
+                google.setAccessToken((String) googleDetails.get("accessToken"));
+                google.setRefreshToken((String) googleDetails.get("refreshToken"));
+                google.setExpiresInSeconds((Long) googleDetails.get("expiresInSeconds"));
+                google.setScope((String) googleDetails.get("scope"));
+
                 return googleCredentialRepository.save(google);
             } else if (credentialType == CredentialType.GITHUB) {
                 Github Github = new Github();
-                Github githubDetails = (Github) credentialDto;
+                HashMap<String, Object> githubDetails = new HashMap<>(credentialDto);
 
+                Github.setCredentialType(credentialType);
                 Github.setUser(user);
-                BeanUtils.copyProperties(githubDetails, Github);
+
+                Github.setEmail((String) githubDetails.get("email"));
+                Github.setAccess((String) githubDetails.get("access"));
+                Github.setRefresh((String) githubDetails.get("refresh"));
+
                 return githubCredentialRepository.save(Github);
             }
         }

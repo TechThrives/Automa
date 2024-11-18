@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.automa.dto.ErrorResponse;
+import com.automa.dto.MessageResponse;
 import com.automa.filter.JwtAuthenticationFilter;
 import com.automa.services.implementation.CustomUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,20 +55,20 @@ public class SecurityConfig {
                                                 .authenticationEntryPoint((request, response, authException) -> {
                                                         response.setContentType("application/json");
                                                         response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                                                        ErrorResponse errorResponse = new ErrorResponse(
+                                                        MessageResponse messageResponse = new MessageResponse(
                                                                         "Unauthorized",
                                                                         Arrays.asList("You need to authenticate to access this resource."));
                                                         response.getWriter().write(new ObjectMapper()
-                                                                        .writeValueAsString(errorResponse));
+                                                                        .writeValueAsString(messageResponse));
                                                 })
                                                 .accessDeniedHandler((request, response, accessDeniedException) -> {
                                                         response.setContentType("application/json");
                                                         response.setStatus(HttpStatus.FORBIDDEN.value());
-                                                        ErrorResponse errorResponse = new ErrorResponse(
+                                                        MessageResponse messageResponse = new MessageResponse(
                                                                         "Access Denied",
                                                                         Arrays.asList("You do not have permission to access this resource."));
                                                         response.getWriter().write(new ObjectMapper()
-                                                                        .writeValueAsString(errorResponse));
+                                                                        .writeValueAsString(messageResponse));
                                                 }))
                                 .build();
 

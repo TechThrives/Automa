@@ -36,17 +36,19 @@ public class ResponseUtils {
                 "<!DOCTYPE html><html><body><script>" + script + "</script></body></html>");
     }
 
-    public static void sendHtmlResponseWithPostMessageScript(HttpServletResponse response, String message)
-            throws IOException {
-        String jsonResponse = String.format("{ \"message\": \"%s\" }", StringUtils.escapeJavaScript(message));
-        System.out.println(frontendUri);
-        String script = String.format(
-                "window.opener.postMessage(%s, '%s'); window.close();", jsonResponse, frontendUri);
+    public static void sendHtmlResponseWithPostMessageScript(HttpServletResponse response, String message) {
+        try {
+            String jsonResponse = String.format("{ \"message\": \"%s\" }", StringUtils.escapeJavaScript(message));
+            String script = String.format(
+                    "window.opener.postMessage(%s, '%s'); window.close();", jsonResponse, frontendUri);
 
-        response.setContentType("text/html");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(
-                "<!DOCTYPE html><html><body><script>" + script + "</script></body></html>");
+            response.setContentType("text/html");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(
+                    "<!DOCTYPE html><html><body><script>" + script + "</script></body></html>");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void sendJsonResponse(HttpServletResponse response, Object responseObject) {

@@ -1,4 +1,4 @@
-package com.automa.entity;
+package com.automa.entity.action;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,11 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+import com.automa.entity.*;
+
 @Data
 @Entity
 @Table(name = "actions")
 @AllArgsConstructor
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Action {
 
     @Id

@@ -1,6 +1,11 @@
-package com.automa.entity.credential;
+package com.automa.entity.action.mail;
 
-import jakarta.persistence.*;
+import java.util.List;
+
+import com.automa.entity.action.Action;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,15 +16,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Github extends Credential {
+public class SendMail extends Action {
 
     @Column(nullable = false)
-    private String email;
-    
-    @Column(nullable = false)
-    private String access;
+    private List<String> sendTo;
 
     @Column(nullable = false)
-    private String refresh;
+    private String subject;
+
+    @Column(nullable = false)
+    private String body;
 }
-

@@ -1,5 +1,6 @@
 package com.automa.services.interfaces;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public interface ICredential {
 
     Credential createOrUpdateCredential(ApplicationUser user,
             CredentialType credentialType,
-            Object credentialDetails);
+            HashMap<String, Object> credentialDetails);
 
     void deleteCredential(UUID id);
 }

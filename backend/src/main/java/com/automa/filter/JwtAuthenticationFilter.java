@@ -1,7 +1,7 @@
 package com.automa.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.automa.dto.ErrorResponse;
+import com.automa.dto.MessageResponse;
 import com.automa.services.implementation.CustomUserDetailsService;
 import com.automa.services.implementation.JwtService;
 
@@ -70,19 +70,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException e) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType("application/json");
-                ErrorResponse errorResponse = new ErrorResponse(
+                MessageResponse messageResponse = new MessageResponse(
                         "Token Expired",
                         Collections.singletonList("The token has expired. Please sign in again."));
-                response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+                response.getWriter().write(new ObjectMapper().writeValueAsString(messageResponse));
                 return;
             } catch (Exception e) {
                 System.out.println(e.getMessage());
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 response.setContentType("application/json");
-                ErrorResponse errorResponse = new ErrorResponse(
+                MessageResponse messageResponse = new MessageResponse(
                         "Authentication Error",
                         Collections.singletonList("An error occurred during authentication: " + e.getMessage()));
-                response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
+                response.getWriter().write(new ObjectMapper().writeValueAsString(messageResponse));
                 return;
             }
         }

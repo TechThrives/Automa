@@ -12,4 +12,5 @@ import com.automa.entity.credential.Google;
 @Repository
 public interface GoogleCredentialRepository extends JpaRepository<Google, UUID> {
     Optional<Google> findByUser(ApplicationUser user);
+    Optional<Google> findByEmail(String email);
 }

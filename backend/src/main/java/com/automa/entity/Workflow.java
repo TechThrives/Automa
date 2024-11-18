@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.UUID;
 
+import com.automa.entity.action.Action;
+import com.automa.entity.trigger.Trigger;
+
 @Data
 @Entity
 @Table(name = "workflow")

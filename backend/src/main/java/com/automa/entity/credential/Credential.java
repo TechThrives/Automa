@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 import com.automa.entity.ApplicationUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @Entity

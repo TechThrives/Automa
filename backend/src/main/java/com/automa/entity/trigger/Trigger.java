@@ -1,4 +1,4 @@
-package com.automa.entity;
+package com.automa.entity.trigger;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.UUID;
+
+import com.automa.entity.*;
 
 
 @Data

@@ -1,15 +1,14 @@
 package com.automa.services.implementation;
 
 import java.io.IOException;
+import java.util.HashMap;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.automa.config.GoogleConfig;
 import com.automa.dto.MessageResponse;
-import com.automa.dto.credential.GoogleCredentialDto;
 import com.automa.entity.credential.CredentialType;
 import com.automa.repository.ApplicationUserRepository;
 import com.automa.entity.ApplicationUser;
@@ -53,18 +52,23 @@ public class GoogleService implements IGoogle {
                 String username = jwtService.extractUsername(token);
 
                 GoogleTokenResponse tokenResponse = googleConfig.exchangeCodeForToken(code);
+                String email = tokenResponse.parseIdToken().getPayload().getEmail();
 
-                GoogleCredentialDto credentialDto = new GoogleCredentialDto();
+                HashMap<String, Object> credentialDto = new HashMap<>();
+                credentialDto.put("email", email);
+                credentialDto.put("accessToken", tokenResponse.getAccessToken());
+                credentialDto.put("refreshToken", tokenResponse.getRefreshToken());
+                credentialDto.put("expiresInSeconds", tokenResponse.getExpiresInSeconds());
+                credentialDto.put("scope", tokenResponse.getScope());
 
-                BeanUtils.copyProperties(tokenResponse, credentialDto);
-                credentialDto.setExpiresIn(tokenResponse.getExpiresInSeconds());
+                System.out.println(tokenResponse.getAccessToken());
 
                 ApplicationUser user = applicationUserRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User Not Found!!!"));
 
                 credentialService.createOrUpdateCredential(user, CredentialType.GOOGLE, credentialDto);
             }
-
             return new MessageResponse("success");
+
 
         } catch (IOException e) {
             if (e instanceof HttpResponseException httpResponseException &&

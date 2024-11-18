@@ -10,8 +10,6 @@ import org.springframework.validation.annotation.Validated;
 
 import com.automa.dto.applicationuser.ApplicationUserResponse;
 import com.automa.entity.ApplicationUser;
-import com.automa.entity.credential.Credential;
-import com.automa.entity.credential.CredentialType;
 import com.automa.repository.ApplicationUserRepository;
 import com.automa.services.interfaces.IApplicationUser;
 
@@ -20,12 +18,9 @@ import com.automa.services.interfaces.IApplicationUser;
 public class ApplicationUserService implements IApplicationUser {
 
     private final ApplicationUserRepository applicationUserRepository;
-    private final CredentialService credentialService;
 
-    public ApplicationUserService(ApplicationUserRepository applicationUserRepository,
-            CredentialService credentialService) {
+    public ApplicationUserService(ApplicationUserRepository applicationUserRepository) {
         this.applicationUserRepository = applicationUserRepository;
-        this.credentialService = credentialService;
     }
 
     public List<ApplicationUserResponse> getAll() {
@@ -56,11 +51,6 @@ public class ApplicationUserService implements IApplicationUser {
             ApplicationUserResponse response = new ApplicationUserResponse();
             BeanUtils.copyProperties(user, response);
             return response;
-    }
-
-    public Credential saveUserCredentials(String username, CredentialType credentialType, Object credentialDto) {
-        ApplicationUser user = applicationUserRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User Not Found!!!"));
-        return credentialService.createOrUpdateCredential(user, credentialType, credentialDto);
     }
 
 }
