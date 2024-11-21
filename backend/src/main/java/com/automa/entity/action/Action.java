@@ -1,20 +1,20 @@
 package com.automa.entity.action;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import java.util.*;
 
-import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
-import com.automa.entity.*;
+import com.automa.entity.Flow;
+import com.automa.entity.Workflow;
 
 @Data
 @Entity
 @Table(name = "actions")
 @AllArgsConstructor
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Action {
 
     @Id
@@ -28,7 +28,25 @@ public class Action {
     @Column(nullable = false)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Each action is linked to one workflow
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_id", nullable = false)
+    @ToString.Exclude
     private Workflow workflow;
+
+    @OneToMany(mappedBy = "fromAction", cascade = CascadeType.ALL, fetch =
+    FetchType.LAZY)
+    @ToString.Exclude
+    private List<Flow> outgoingFlows;
+
+    @OneToMany(mappedBy = "toAction", cascade = CascadeType.ALL, fetch =
+    FetchType.LAZY)
+    @ToString.Exclude
+    private List<Flow> incomingFlows;
+
+    @Column(nullable = false)
+    private ActionType actionType;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private HashMap<String, Object> config;
 }

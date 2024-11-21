@@ -5,11 +5,7 @@ import org.springframework.stereotype.Service;
 import com.automa.entity.ApplicationUser;
 import com.automa.entity.credential.Credential;
 import com.automa.entity.credential.CredentialType;
-import com.automa.entity.credential.Github;
-import com.automa.entity.credential.Google;
 import com.automa.repository.CredentialRepository;
-import com.automa.repository.GithubCredentialRepository;
-import com.automa.repository.GoogleCredentialRepository;
 import com.automa.services.interfaces.ICredential;
 
 import java.util.HashMap;
@@ -21,15 +17,9 @@ import java.util.UUID;
 public class CredentialService implements ICredential {
 
     private final CredentialRepository credentialRepository;
-    private final GoogleCredentialRepository googleCredentialRepository;
-    private final GithubCredentialRepository githubCredentialRepository;
 
-    public CredentialService(CredentialRepository credentialRepository,
-            GoogleCredentialRepository GoogleRepository,
-            GithubCredentialRepository GithubRepository) {
+    public CredentialService(CredentialRepository credentialRepository) {
         this.credentialRepository = credentialRepository;
-        this.googleCredentialRepository = GoogleRepository;
-        this.githubCredentialRepository = GithubRepository;
     }
 
     @Override
@@ -55,82 +45,32 @@ public class CredentialService implements ICredential {
     public Credential createOrUpdateCredential(ApplicationUser user, CredentialType credentialType,
             HashMap<String, Object> credentialDto) {
 
-        String email = (String) credentialDto.get("email");
-
-        if (credentialType == CredentialType.GOOGLE) {
-            Optional<Google> existingGoogleCredential = googleCredentialRepository.findByEmail(email);
-
-            if (existingGoogleCredential.isPresent()) {
-                Google googleCredential = existingGoogleCredential.get();
-
-                if (!googleCredential.getUser().equals(user)) {
-                    throw new RuntimeException("This Google account is already connected to another user.");
-                }
-            }
+        if (credentialRepository.existsByConfigEmailAndCredentialTypeAndNotUser(credentialDto.get("email").toString(),
+                credentialType.name(), user.getId())) {
+            throw new RuntimeException("The email " + credentialDto.get("email") +
+                    " is already connected to another account with the " + credentialType + " credential.");
         }
 
         Optional<Credential> optionalCredential = credentialRepository.findByUserAndCredentialType(user,
                 credentialType);
 
         if (optionalCredential.isPresent()) {
+
             Credential existingCredential = optionalCredential.get();
+            
+            existingCredential.setConfig(credentialDto);
 
-            if (credentialType == CredentialType.GOOGLE) {
+            return credentialRepository.save(existingCredential);
 
-                Google existingGoogle = (Google) existingCredential;
-                HashMap<String, Object> googleDetails = new HashMap<>(credentialDto);
-
-                existingGoogle.setEmail((String) googleDetails.get("email"));
-                existingGoogle.setAccessToken((String) googleDetails.get("accessToken"));
-                existingGoogle.setRefreshToken((String) googleDetails.get("refreshToken"));
-                existingGoogle.setExpiresInSeconds((Long) googleDetails.get("expiresInSeconds"));
-                existingGoogle.setScope((String) googleDetails.get("scope"));
-
-                return googleCredentialRepository.save(existingGoogle);
-
-            } else if (credentialType == CredentialType.GITHUB) {
-                Github existingGithub = (Github) existingCredential;
-
-                HashMap<String, Object> githubDetails = new HashMap<>(credentialDto);
-
-                existingGithub.setEmail((String) githubDetails.get("email"));
-                existingGithub.setAccess((String) githubDetails.get("access"));
-                existingGithub.setRefresh((String) githubDetails.get("refresh"));
-
-                return githubCredentialRepository.save(existingGithub);
-            }
         } else {
-            if (credentialType == CredentialType.GOOGLE) {
-                System.out.println(credentialDto);
 
-                Google google = new Google();
-                HashMap<String, Object> googleDetails = new HashMap<>(credentialDto);
+            Credential newCredential = new Credential();
+            newCredential.setUser(user);
+            newCredential.setCredentialType(credentialType);
+            newCredential.setConfig(credentialDto);
 
-                google.setUser(user);
-                google.setCredentialType(credentialType);
+            return credentialRepository.save(newCredential);
 
-                google.setEmail((String) googleDetails.get("email"));
-                google.setAccessToken((String) googleDetails.get("accessToken"));
-                google.setRefreshToken((String) googleDetails.get("refreshToken"));
-                google.setExpiresInSeconds((Long) googleDetails.get("expiresInSeconds"));
-                google.setScope((String) googleDetails.get("scope"));
-
-                return googleCredentialRepository.save(google);
-            } else if (credentialType == CredentialType.GITHUB) {
-                Github Github = new Github();
-                HashMap<String, Object> githubDetails = new HashMap<>(credentialDto);
-
-                Github.setCredentialType(credentialType);
-                Github.setUser(user);
-
-                Github.setEmail((String) githubDetails.get("email"));
-                Github.setAccess((String) githubDetails.get("access"));
-                Github.setRefresh((String) githubDetails.get("refresh"));
-
-                return githubCredentialRepository.save(Github);
-            }
         }
-
-        return null;
     }
 }

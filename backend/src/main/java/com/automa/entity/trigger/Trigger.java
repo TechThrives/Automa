@@ -1,14 +1,12 @@
 package com.automa.entity.trigger;
+import com.automa.entity.Workflow;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import java.util.*;
 
-import java.util.UUID;
-
-import com.automa.entity.*;
-
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Data
 @Entity
@@ -25,7 +23,14 @@ public class Trigger {
     @Column(nullable = false)
     private String name;
 
-
     @OneToOne(mappedBy = "trigger", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private Workflow workflow;
+
+    @Column(nullable = false)
+    private TriggerType triggerType;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private HashMap<String, Object> config;
 }

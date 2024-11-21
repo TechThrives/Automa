@@ -3,14 +3,20 @@ package com.automa.services.implementation.action;
 import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
+import org.springframework.web.client.RestClient;
 import com.automa.services.ApiHelperService;
+import com.automa.utils.ServiceContext;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import jakarta.mail.Session;
 import jakarta.mail.Message.RecipientType;
 import jakarta.mail.internet.InternetAddress;
@@ -20,11 +26,7 @@ import jakarta.mail.internet.MimeMessage;
 @Validated
 public class GoogleMail {
 
-    private final ApiHelperService apiHelperService;
-
-    GoogleMail(ApiHelperService apiHelperService) {
-        this.apiHelperService = apiHelperService;
-    }
+    private final ApiHelperService apiHelperService = new ApiHelperService();
 
     private static MimeMessage createEmail(String to, String subject, String bodyText) {
         try {
@@ -53,19 +55,51 @@ public class GoogleMail {
         }
     }
 
-    public Map<String, String> sendEmail(String accessToken) {
-        MimeMessage email = createEmail("robertbennet1998@gmail.com", "Hi", "Nothing");
-        String apiUrl = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
-        String encodedEmail = Base64.getUrlEncoder().encodeToString(emailToBytes(email));
-        String jsonPayload = "{ \"raw\": \"" + encodedEmail + "\" }";
+    public HashMap<String, String> sendEmail() {
+        try {
+            ServiceContext.setGoogleAccessToken("");
+            RestClient restClient = apiHelperService.buildClient();
+            String apiUrl = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 
-        JsonObject jsonResponse = apiHelperService.makeApiRequest(apiUrl, accessToken, "POST", jsonPayload);
+            MimeMessage email = createEmail("abc@gmail.com", "Hi", "Nothing");
+            String encodedEmail = Base64.getUrlEncoder().encodeToString(emailToBytes(email));
+            String jsonPayload = "{ \"raw\": \"" + encodedEmail + "\" }";
 
-        Map<String, String> responseMap = new HashMap<>();
+            String responseBody = restClient
+                    .method(HttpMethod.POST)
+                    .uri(apiUrl)
+                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + ServiceContext.getGoogleAccessToken())
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .body(jsonPayload)
+                    .retrieve()
+                    .body(String.class);
 
-        responseMap.put("sent", "true");
+            JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
+            JsonArray labelIds = jsonResponse.getAsJsonArray("labelIds");
 
-        return responseMap;
+            String isSend = "false";
+
+            if (labelIds != null) {
+                for (int i = 0; i < labelIds.size(); i++) {
+                    if ("SENT".equals(labelIds.get(i).getAsString())) {
+                        isSend = "true";
+                        break;
+                    }
+                }
+            }
+
+            HashMap<String, String> responseMap = new HashMap<>();
+
+            responseMap.put("sent", isSend);
+
+            return responseMap;
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        } finally {
+            ServiceContext.removeGoogleAccessToken();
+        }
     }
 
 }

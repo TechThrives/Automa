@@ -1,19 +1,15 @@
 package com.automa.entity;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.UUID;
-
 import com.automa.entity.action.Action;
 import com.automa.entity.trigger.Trigger;
 
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.*;
+
 @Data
 @Entity
-@Table(name = "workflow")
+@Table(name = "workflows")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Workflow {
@@ -23,18 +19,27 @@ public class Workflow {
     @Column(nullable = false, updatable = false, unique = true)
     private UUID id;
 
+    @Column(nullable = false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Many workflows can belong to one user
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private ApplicationUser user;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL) // One Trigger can be associated with one Workflow
-    @JoinColumn(name = "trigger_id", nullable = false) // Foreign key for the trigger
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "trigger_id", nullable = false)
     private Trigger trigger;
 
-    @OneToMany(mappedBy = "workflow", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // One workflow can have many actions
+    @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<Action> actions;
 
+    @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<Flow> flows;
+
+    @Column(nullable = false)
     private Boolean isActive = true;
 }
+
