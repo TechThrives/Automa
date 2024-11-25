@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.temp .react-flow__edge-path {
+    stroke: #bbb;
+    stroke-dasharray: 5 5;
+  }
