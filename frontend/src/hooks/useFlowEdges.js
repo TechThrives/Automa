@@ -1,26 +1,23 @@
 import { useCallback } from "react";
-import { applyEdgeChanges, addEdge } from "@xyflow/react";
-import { MarkerType } from "@xyflow/react";
-import { useWorkflow } from "../context/WorkflowContext";
+import { addEdge, useReactFlow } from "@xyflow/react";
 
 export const useFlowEdges = () => {
-  const { setEdges } = useWorkflow();
+  const { setEdges, getNode } = useReactFlow();
 
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    []
-  );
+  const onConnect = useCallback((params) => {
+    const sourceNode = getNode(params.source);
+    params.type = "normalEdge";
+    params.id = `${params.source}-${params.target}`;
 
-  const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) =>
-        addEdge({ ...params, markerEnd: { type: MarkerType.Arrow } }, eds)
-      ),
-    []
-  );
+    setEdges((eds) => addEdge({ ...params, input: sourceNode.output }, eds));
+  }, []);
+
+  const isValidConnection = useCallback((params) => {
+    if (params.source !== params.target) return true;
+  }, []);
 
   return {
-    onEdgesChange,
     onConnect,
+    isValidConnection,
   };
 };

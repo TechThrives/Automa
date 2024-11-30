@@ -96,13 +96,17 @@ const ConnectAuth = () => {
   };
 
   const getCookies = () => {
-    fetch("http://localhost:8080/api/auth/kie", {
+    fetch("http://localhost:8080/api/google/callback?code=your-code", {
       method: "GET",
-      credentials: "include", // Important for including cookies in the request
+      credentials: "include", // Send credentials (if required)
+      headers: {
+        "Authorization": "Bearer your-token",
+      },
     })
       .then(response => response.json())
       .then(data => console.log(data))
-      .catch(error => console.error(error));
+      .catch(error => console.error("CORS Error:", error));
+    
   };
 
   return (

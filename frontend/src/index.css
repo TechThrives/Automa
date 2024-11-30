@@ -2,7 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  height: 100vh;
+  width: 100%;
+  font-family: "Poppins", serif;
+  font-style: normal;
+}
 .temp .react-flow__edge-path {
-    stroke: #bbb;
-    stroke-dasharray: 5 5;
-  }
+  stroke: #bbb;
+  stroke-dasharray: 5 5;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+}
+
+.node {
+  border: 1px solid white;
+}
+
+.react-flow__node.selectable.selected .node {
+  border: 1px solid #555555;
+}
+
+
+.react-flow__edge .react-flow__edge-path.edge {
+  marker-end: url(#arrowclosed);
+}
+.react-flow__edge.selectable.selected .react-flow__edge-path.edge {
+  marker-end: url(#arrowclosedgray);
+}

@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   ReactFlow,
   Background,
   Controls,
   MiniMap,
   ReactFlowProvider,
+  useEdgesState,
+  useNodesState,
+  getOutgoers,
+  getIncomers,
+  getConnectedEdges,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { nodeTypes } from "../../nodes/NodeTypes";
-import { useFlowNodes } from "../../hooks/useFlowNodes";
+import { edgeTypes } from "../../edges/EdgeTypes";
 import { useFlowEdges } from "../../hooks/useFlowEdges";
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { useNodeConnections } from "../../hooks/useNodeConnections";
@@ -16,11 +21,13 @@ import { useReconnect } from "../../hooks/useReconnect";
 import { WorkflowProvider, useWorkflow } from "../../context/WorkflowContext";
 import Sidebar from "../../components/Sidebar";
 import Modal from "../../components/modals/Modal";
+import Markers from "../../edges/Markers";
 
 const Flow = () => {
-  const { nodes, edges, setSelectedNode, setIsOpen, isOpen } = useWorkflow();
-  const { onNodesChange } = useFlowNodes();
-  const { onEdgesChange, onConnect } = useFlowEdges();
+  const { setSelectedNode, setIsOpen, isOpen } = useWorkflow();
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { onConnect, isValidConnection } = useFlowEdges();
 
   // Drag and Drop Node
   const { onDragOver, onDrop } = useDragAndDrop();
@@ -31,17 +38,34 @@ const Flow = () => {
   // Delete Edge on Reconnect
   const { onReconnectStart, onReconnect, onReconnectEnd } = useReconnect();
 
-  const onNodeClick = (e, node) => {
-    console.log(node);
+  const onNodeContextMenu = (e, node) => {
+    e.preventDefault();
     setSelectedNode(node);
     setIsOpen(true);
   };
+
+  const onNodesDelete = useCallback(
+    (deleted) => {
+      setEdges(
+        deleted.reduce((acc, node) => {
+          console.log(acc);
+          const connectedEdges = getConnectedEdges([node], edges);
+          const remainingEdges = acc.filter(
+            (edge) => !connectedEdges.includes(edge)
+          );
+          console.log(remainingEdges);
+          return remainingEdges;
+        }, edges)
+      );
+    },
+    [nodes, edges]
+  );
 
   return (
     <div className="flex h-screen">
       {isOpen && <Modal />}
       <Sidebar />
-      <div className="flex-1 bg-gray-100 p-6">
+      <div className="flex-1 bg-gray-100 h-full p-6">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -51,14 +75,19 @@ const Flow = () => {
           // onNodeDrag={onNodeDrag}
           // onNodeDragStop={onNodeDragStop}
           onDrop={onDrop}
-          onNodeClick={onNodeClick}
+          // onNodeClick={onNodeClick}
           onDragOver={onDragOver}
-          onReconnectStart={onReconnectStart}
-          onReconnect={onReconnect}
-          onReconnectEnd={onReconnectEnd}
+          // onReconnectStart={onReconnectStart}
+          // onReconnect={onReconnect}
+          // onReconnectEnd={onReconnectEnd}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
+          isValidConnection={isValidConnection}
+          onNodeContextMenu={onNodeContextMenu}
+          onNodesDelete={onNodesDelete}
           fitView
         >
+          <Markers />
           <Controls />
           <MiniMap />
           <Background variant="dots" gap={12} size={1} />

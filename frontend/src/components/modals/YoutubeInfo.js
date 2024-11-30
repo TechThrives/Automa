@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useWorkflow } from "../../context/WorkflowContext";
+import { useReactFlow } from "@xyflow/react";
 
 const YoutubeInfo = () => {
-  const { setNodes } = useWorkflow();
+  const { setNodes } = useReactFlow();
   const { selectedNode: node, setIsOpen } = useWorkflow();
-  const [url, setUrl] = useState(node.nodeData.url);
-  const [isValid, setIsValid] = useState(node.nodeData.url.trim().length >= 3);
+  const [url, setUrl] = useState(node.data.url);
+  const [isValid, setIsValid] = useState(node.data.url.trim().length >= 3);
 
   const handleUrlChange = (e) => {
     const value = e.target.value;
@@ -16,11 +17,8 @@ const YoutubeInfo = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isValid) {
-      setNodes((nodes) => {
-        const restNodes = nodes.filter((e) => e.id !== node.id);
-        restNodes.push({ ...node, nodeData: { url } });
-        return restNodes;
-      });
+      const newNode = { ...node, data: { url } };
+      setNodes((nds) => nds.concat(newNode));
       setIsOpen(false);
     }
   };
@@ -54,13 +52,6 @@ const YoutubeInfo = () => {
         )}
       </div>
       <div className="flex justify-end space-x-2">
-        <button
-          type="button"
-          className="px-3 py-1 text-xs bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          onClick={() => setIsOpen(false)}
-        >
-          Cancel
-        </button>
         <button
           type="submit"
           className="px-3 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"

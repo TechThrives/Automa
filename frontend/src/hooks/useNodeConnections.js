@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 import { MarkerType, useReactFlow, useStoreApi } from "@xyflow/react";
-import { useWorkflow } from "../context/WorkflowContext";
 
 export const useNodeConnections = () => {
-  const { setEdges } = useWorkflow();
+  const { setEdges } = useReactFlow();
   const store = useStoreApi();
   const { getInternalNode } = useReactFlow();
   const MIN_DISTANCE = 150;

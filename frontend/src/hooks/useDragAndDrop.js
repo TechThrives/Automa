@@ -3,13 +3,24 @@ import { useCallback } from "react";
 import { useWorkflow } from "../context/WorkflowContext";
 
 export const useDragAndDrop = () => {
-  const { screenToFlowPosition } = useReactFlow();
-  const{ type, setSelectedNode, setIsOpen, setNodes } = useWorkflow();
+  const { screenToFlowPosition, setNodes } = useReactFlow();
+  const{ type, setSelectedNode, setIsOpen } = useWorkflow();
 
-  const getNodeData = (type) => {
+  const initNodeData = (type) => {
     switch (type) {
       case "youtubeInfo":
         return { url: "" };
+      case "twitterInfo":
+        return { profile: "" };
+      default:
+        return { label: "Node" };
+    }
+  };
+
+  const initNodeOutput = (type) => {
+    switch (type) {
+      case "youtubeInfo":
+        return { title: "", description: "", viewCount: "", likeCount: "", commentCount: "" };
       case "twitterInfo":
         return { profile: "" };
       default:
@@ -37,10 +48,10 @@ export const useDragAndDrop = () => {
         id: `node-${Date.now()}`,
         type,
         position,
-        nodeData: getNodeData(type),
+        data: initNodeData(type),
+        output: initNodeOutput(type),
       };
 
-      setNodes((nds) => nds.concat(newNode));
       setSelectedNode(newNode);
       setIsOpen(true);
     },
