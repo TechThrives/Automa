@@ -5,9 +5,9 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.automa.entity.trigger.Trigger;
+import com.automa.entity.action.ActionInfo;
 
 @Repository
-public interface TriggerRepository extends JpaRepository<Trigger, UUID> {
+public interface ActionInfoRepository extends JpaRepository<ActionInfo, UUID> {
 
 }

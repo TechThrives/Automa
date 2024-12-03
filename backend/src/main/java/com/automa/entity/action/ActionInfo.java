@@ -1,20 +1,20 @@
-package com.automa.entity.trigger;
-import com.automa.entity.Workflow;
+package com.automa.entity.action;
 
-import jakarta.persistence.*;
-import lombok.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import jakarta.persistence.*;
+import lombok.*;
+
 @Data
 @Entity
-@Table(name = "triggers")
+@Table(name = "action_infos")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Trigger {
-
+public class ActionInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, updatable = false, unique = true)
@@ -23,14 +23,17 @@ public class Trigger {
     @Column(nullable = false)
     private String name;
 
-    @OneToOne(mappedBy = "trigger", fetch = FetchType.LAZY)
-    @ToString.Exclude
-    private Workflow workflow;
-
     @Column(nullable = false)
-    private TriggerType triggerType;
+    private String description;
+
+    @OneToOne
+    private Type type;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
-    private HashMap<String, Object> config;
+    private HashMap<String, Object> data;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private HashMap<String, Object> output;
 }

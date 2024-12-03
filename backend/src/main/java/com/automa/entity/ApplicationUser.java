@@ -12,9 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.automa.entity.credential.Credential;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Entity

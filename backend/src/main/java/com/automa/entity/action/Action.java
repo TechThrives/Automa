@@ -22,31 +22,30 @@ public class Action {
     @Column(nullable = false, updatable = false, unique = true)
     private UUID id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String description;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_id", nullable = false)
     @ToString.Exclude
     private Workflow workflow;
 
-    @OneToMany(mappedBy = "fromAction", cascade = CascadeType.ALL, fetch =
-    FetchType.LAZY)
+    @OneToOne
+    private Type type;
+
+    @OneToOne(mappedBy = "action", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Position position;
+
+    @OneToMany(mappedBy = "fromAction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Flow> outgoingFlows;
 
-    @OneToMany(mappedBy = "toAction", cascade = CascadeType.ALL, fetch =
-    FetchType.LAZY)
+    @OneToMany(mappedBy = "toAction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Flow> incomingFlows;
 
-    @Column(nullable = false)
-    private ActionType actionType;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb", nullable = false)
+    private HashMap<String, Object> data;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
-    private HashMap<String, Object> config;
+    private HashMap<String, Object> output;
 }

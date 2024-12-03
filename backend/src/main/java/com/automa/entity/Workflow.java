@@ -1,7 +1,6 @@
 package com.automa.entity;
 
 import com.automa.entity.action.Action;
-import com.automa.entity.trigger.Trigger;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,10 +25,6 @@ public class Workflow {
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     private ApplicationUser user;
-
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "trigger_id", nullable = false)
-    private Trigger trigger;
 
     @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
