@@ -1,86 +1,208 @@
-import React, { useState } from "react";
-import { useWorkflow } from "../context/WorkflowContext";
+import React, { useState, useRef, useEffect } from "react";
+import { FiLink } from "react-icons/fi";
 import {
+  FiMenu,
+  FiHome,
+  FiBarChart,
+  FiSettings,
   FiChevronDown,
-  FiChevronRight,
-  FiYoutube,
-  FiZap,
+  FiChevronUp,
+  FiUser,
+  FiLogOut,
+  FiPieChart,
+  FiTrendingUp,
+  FiClock,
 } from "react-icons/fi";
+import { IoMdClose } from "react-icons/io";
 
-const Sidebar = () => {
-  const [openGroups, setOpenGroups] = useState({
-    trigger: true,
-    youtubeAction: false,
-  });
-  const { setType } = useWorkflow();
+const menuItems = [
+  {
+    name: "Dashboard",
+    icon: FiHome,
+    href: "/dashboard",
+  },
+  {
+    name: "Analytics",
+    icon: FiBarChart,
+    subItems: [
+      { name: "Overview", href: "/analytics/overview", icon: FiPieChart },
+      { name: "Reports", href: "/analytics/reports", icon: FiTrendingUp },
+      { name: "Real-time", href: "/analytics/real-time", icon: FiClock },
+    ],
+  },
+  {
+    name: "Settings",
+    icon: FiSettings,
+    subItems: [
+      { name: "Profile", href: "/dashboard/profile", icon: FiUser },
+      { name: "Connect", href: "/dashboard/connect", icon: FiLink },
+      { name: "Logout", href: "/logout", icon: FiLogOut },
+    ],
+  },
+];
 
-  const toggleGroup = (group) => {
-    setOpenGroups((prev) => ({ ...prev, [group]: !prev[group] }));
+const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedSubMenus, setExpandedSubMenus] = useState({});
+  const [activeMenu, setActiveMenu] = useState(null);
+  const sidebarRef = useRef(null);
+
+  const toggleSidebar = () => {
+    if (window.innerWidth > 768) {
+      setIsExpanded(!isExpanded);
+    } else {
+      toggleMobileMenu();
+    }
   };
 
-  const components = {
-    trigger: [
-      { name: "Trigger A", type: "input", icon: FiZap },
-      { name: "Trigger B", type: "triggerB", icon: FiZap },
-      { name: "Trigger C", type: "triggerC", icon: FiZap },
-    ],
-    youtubeAction: [
-      { name: "Get Video Info", type: "youtubeInfo", icon: FiYoutube },
-      { name: "Save Video Info", type: "youtubeInfo", icon: FiYoutube },
-      { name: "Process Video", type: "youtubeInfo", icon: FiYoutube },
-    ],
-    youtubeActions: [
-      { name: "Get Video Info", type: "youtubeInfo", icon: FiYoutube },
-      { name: "Save Video Info", type: "youtubeInfo", icon: FiYoutube },
-      { name: "Process Video", type: "youtubeInfo", icon: FiYoutube },
-    ],
-    youtubeActiosn: [
-      { name: "Get Video Info", type: "youtubeInfo", icon: FiYoutube },
-      { name: "Save Video Info", type: "youtubeInfo", icon: FiYoutube },
-      { name: "Process Video", type: "youtubeInfo", icon: FiYoutube },
-    ],
+  const toggleSubMenu = (menuName) => {
+    setExpandedSubMenus((prev) => ({
+      ...prev,
+      [menuName]: !prev[menuName],
+    }));
+    setActiveMenu(menuName);
   };
 
-  const onDragStart = (event, nodeType) => {
-    setType(nodeType);
-    event.dataTransfer.effectAllowed = "move";
+  const handleMenuItemClick = () => {
+    if (window.innerWidth <= 768) {
+      setIsExpanded(true);
+      toggleMobileMenu();
+    }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setActiveMenu(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsExpanded(true);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   return (
-    <div className="w-64 bg-white text-gray-800 p-4 hidden md:block">
-      <h1 className="text-lg font-bold mb-4 sticky top-0">Components</h1>
-      <div className="h-[90%] overflow-y-auto hide-scrollbar">
-        {Object.entries(components).map(([group, items], index) => (
-          <div key={group} className="mb-4 bg-gray-100">
-            <button
-              onClick={() => toggleGroup(group)}
-              className="flex justify-between items-center w-full text-left py-2 px-3 hover:bg-gray-200 rounded transition-colors duration-200"
-            >
-              <span className="font-medium capitalize">{group}</span>
-              {openGroups[group] ? (
-                <FiChevronDown className="w-5 h-5" />
-              ) : (
-                <FiChevronRight className="w-5 h-5" />
-              )}
-            </button>
-
-            {openGroups[group] && (
-              <div className="grid grid-cols-2 gap-2 overflow-hidden transition-all duration-200 p-2">
-                {items.map((component, idx) => (
-                  <div
-                    key={idx}
-                    className="p-2 bg-gray-100 rounded text-sm flex flex-col items-center space-x-2 hover:bg-gray-200 cursor-pointer transition-colors duration-200"
-                    onDragStart={(event) => onDragStart(event, component.type)}
-                    draggable
-                  >
-                    <component.icon className="w-6 h-6" />
-                    <span className="text-center">{component.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+    <div
+      ref={sidebarRef}
+      className={`fixed md:static inset-y-0 left-0 z-30 flex flex-col justify-between bg-white text-gray-800 transition-all duration-300 ease-in-out ${
+        isExpanded ? "w-64" : "w-20"
+      } ${
+        isMobileMenuOpen
+          ? "translate-x-0"
+          : "-translate-x-full md:translate-x-0"
+      }`}
+    >
+      <div>
+        <div
+          className={`flex items-center ${
+            isExpanded ? "justify-between pl-5" : "justify-center"
+          } p-4`}
+        >
+          {isExpanded && <span className="text-xl font-semibold">Menu</span>}
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-md hover:bg-gray-200"
+            aria-label="Toggle sidebar"
+          >
+            {isExpanded ? <IoMdClose size={24} /> : <FiMenu size={24} />}
+          </button>
+        </div>
+        <nav>
+          <ul className="space-y-2 py-4">
+            {menuItems.map((item) => (
+              <li key={item.name} className="relative">
+                <div className="px-4">
+                  {item.subItems ? (
+                    <div>
+                      <button
+                        onClick={() => toggleSubMenu(item.name)}
+                        className={`flex items-center w-full p-2 rounded-md hover:bg-gray-200 ${
+                          isExpanded ? "justify-between" : "justify-center"
+                        }`}
+                        aria-expanded={expandedSubMenus[item.name]}
+                      >
+                        <div className="flex items-center">
+                          <item.icon className="w-6 h-6" aria-hidden="true" />
+                          {isExpanded && (
+                            <span className="ml-3">{item.name}</span>
+                          )}
+                        </div>
+                        {isExpanded &&
+                          (expandedSubMenus[item.name] ? (
+                            <FiChevronUp aria-hidden="true" />
+                          ) : (
+                            <FiChevronDown aria-hidden="true" />
+                          ))}
+                      </button>
+                      {((isExpanded && expandedSubMenus[item.name]) ||
+                        (!isExpanded && activeMenu === item.name)) && (
+                        <ul
+                          className={`mt-2 space-y-1 max-h-52 overflow-y-auto hide-scrollbar ${
+                            !isExpanded
+                              ? "absolute left-full top-0 ml-2 bg-white rounded-md shadow-lg p-2 min-w-[200px]"
+                              : ""
+                          }`}
+                        >
+                          {item.subItems.map((subItem) => (
+                            <li key={subItem.name}>
+                              <a
+                                href={subItem.href}
+                                className="flex items-center pl-10 pr-4 py-2 rounded-md hover:bg-gray-200"
+                                onClick={() => {
+                                  setActiveMenu(null);
+                                  handleMenuItemClick();
+                                }}
+                              >
+                                <subItem.icon
+                                  className="mr-2 h-5 w-5"
+                                  aria-hidden="true"
+                                />
+                                <span>{subItem.name}</span>
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <a
+                      href={item.href}
+                        onClick={() => toggleSubMenu(item.name)}
+                        className={`flex items-center w-full p-2 rounded-md hover:bg-gray-200 ${
+                          isExpanded ? "justify-between" : "justify-center"
+                        }`}
+                        aria-expanded={expandedSubMenus[item.name]}
+                      >
+                        <div className="flex items-center">
+                          <item.icon className="w-6 h-6" aria-hidden="true" />
+                          {isExpanded && (
+                            <span className="ml-3">{item.name}</span>
+                          )}
+                        </div>
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
     </div>
   );

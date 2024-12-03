@@ -19,7 +19,7 @@ import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { useNodeConnections } from "../../hooks/useNodeConnections";
 import { useReconnect } from "../../hooks/useReconnect";
 import { WorkflowProvider, useWorkflow } from "../../context/WorkflowContext";
-import Sidebar from "../../components/Sidebar";
+import ComponentSidebar from "../../components/ComponentSidebar";
 import Modal from "../../components/modals/Modal";
 import Markers from "../../edges/Markers";
 
@@ -64,7 +64,7 @@ const Flow = () => {
   return (
     <div className="flex h-screen">
       {isOpen && <Modal />}
-      <Sidebar />
+      <ComponentSidebar />
       <div className="flex-1 bg-gray-100 h-full p-6">
         <ReactFlow
           nodes={nodes}
