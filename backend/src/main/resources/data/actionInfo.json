@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Send Email",
+    "description": "An action to send an email to the specified recipients.",
+    "type": "ACTION",
+    "actionType": "SENDMAIL",
+    "actionGroup": "GMAIL",
+    "data": {
+      "email": "",
+      "subject": "",
+      "message": ""
+    },
+    "output": {
+      "status": "",
+      "sentAt": ""
+    }
+  },
+  {
+    "name": "Schedule Time",
+    "description": "Trigger an action at a specific time.",
+    "type": "TRIGGER",
+    "actionType": "TIME",
+    "actionGroup": "SCHEDULER",
+    "data": {
+      "dateTime": ""
+    },
+    "output": {
+      "status": "",
+      "triggeredAt": ""
+    }
+  }
+]

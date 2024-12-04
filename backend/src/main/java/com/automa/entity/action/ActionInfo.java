@@ -11,7 +11,7 @@ import lombok.*;
 
 @Data
 @Entity
-@Table(name = "action_infos")
+@Table(name = "action_infos", uniqueConstraints = @UniqueConstraint(columnNames = {"type", "action_type", "action_group"}))
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActionInfo {
@@ -25,9 +25,18 @@ public class ActionInfo {
 
     @Column(nullable = false)
     private String description;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BaseType type;
 
-    @OneToOne
-    private Type type;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ActionType actionType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ActionGroup actionGroup;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)

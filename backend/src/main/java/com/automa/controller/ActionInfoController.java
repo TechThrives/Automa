@@ -1,11 +1,21 @@
 package com.automa.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.automa.entity.action.ActionGroup;
+import com.automa.entity.action.ActionInfo;
+import com.automa.entity.action.ActionType;
 import com.automa.services.interfaces.IActionInfo;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 
 @RestController
@@ -18,5 +28,38 @@ public class ActionInfoController {
     public ActionInfoController(IActionInfo actionInfoService) {
         this.actionInfoService = actionInfoService;
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ActionInfo>> getAll() {
+        return new ResponseEntity<>(actionInfoService.getAll(), HttpStatus.OK);
+    }
+    
+    @GetMapping("/type/trigger")
+    public ResponseEntity<List<ActionInfo>> getTriggers() {
+        return new ResponseEntity<>(actionInfoService.getTriggers(), HttpStatus.OK);
+    }
+
+    @GetMapping("/type/action")
+    public ResponseEntity<List<ActionInfo>> getActions() {
+        return new ResponseEntity<>(actionInfoService.getActions(), HttpStatus.OK);
+    }
+
+    @GetMapping("/actionType/{actionType}")
+    public ResponseEntity<List<ActionInfo>> getByActionType(@PathVariable ActionType actionType) {
+        return new ResponseEntity<>(actionInfoService.getByActionType(actionType), HttpStatus.OK);
+    }
+
+    @GetMapping("/group/{actionGroup}")
+    public ResponseEntity<List<ActionInfo>> getByGroup(@PathVariable ActionGroup actionGroup) {
+        return new ResponseEntity<>(actionInfoService.getByActionGroup(actionGroup), HttpStatus.OK);
+    }
+
+    @GetMapping("/groups")
+    public ResponseEntity<ActionGroup[]> getGroups() {
+        return new ResponseEntity<>(ActionGroup.values(), HttpStatus.OK);
+    }
+
+
+    
     
 }

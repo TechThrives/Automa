@@ -27,8 +27,13 @@ public class Action {
     @ToString.Exclude
     private Workflow workflow;
 
-    @OneToOne
-    private Type type;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BaseType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ActionType actionType;
 
     @OneToOne(mappedBy = "action", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Position position;
