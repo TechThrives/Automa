@@ -16,7 +16,6 @@ import com.automa.dto.auth.SignInResponse;
 import com.automa.dto.auth.SignUpRequest;
 import com.automa.services.interfaces.IAuth;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
@@ -42,14 +41,6 @@ public class AuthController {
             @Valid @RequestBody SignInRequest request,
             HttpServletResponse response) {
         SignInResponse signInResponse = authService.signIn(request);
-
-        Cookie cookie = new Cookie("jwtToken", signInResponse.getJwtToken());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/api/");
-        cookie.setMaxAge(3600);
-        response.addCookie(cookie);
-
         return ResponseEntity.status(HttpStatus.OK).body(signInResponse);
     }
 

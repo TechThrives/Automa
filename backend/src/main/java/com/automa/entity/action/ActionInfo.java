@@ -38,6 +38,9 @@ public class ActionInfo {
     @Column(nullable = false)
     private ActionGroup actionGroup;
 
+    @Column(nullable = false)
+    private String scope;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
     private HashMap<String, Object> data;

@@ -5,6 +5,7 @@
     "type": "ACTION",
     "actionType": "SENDMAIL",
     "actionGroup": "GMAIL",
+    "scope": "https://mail.google.com",
     "data": {
       "email": "",
       "subject": "",
@@ -21,6 +22,7 @@
     "type": "TRIGGER",
     "actionType": "TIME",
     "actionGroup": "SCHEDULER",
+    "scope": "None",
     "data": {
       "dateTime": ""
     },

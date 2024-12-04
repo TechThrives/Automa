@@ -9,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 
 import com.automa.config.GoogleConfig;
 import com.automa.dto.MessageResponse;
-import com.automa.entity.credential.Credential;
 import com.automa.entity.credential.CredentialType;
 import com.automa.repository.ApplicationUserRepository;
 import com.automa.entity.ApplicationUser;
@@ -44,16 +43,18 @@ public class GoogleService implements IGoogle {
 
     @Override
     public MessageResponse googleCallback(String code, HttpServletRequest request) {
-        try {
 
-            String token = jwtService.extractJwtTokenFromCookies(request);
+        String authHeader = request.getHeader("Authorization");
 
-            if (token != null) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String jwtToken = authHeader.replace("Bearer ", "");
 
-                String username = jwtService.extractUsername(token);
+            try {
+
+                String username = jwtService.extractUsername(jwtToken);
 
                 ApplicationUser user = applicationUserRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User Not Found!!!"));
+                        .orElseThrow(() -> new RuntimeException("User Not Found!!!"));
 
                 GoogleTokenResponse tokenResponse = googleConfig.exchangeCodeForToken(code);
                 String email = tokenResponse.parseIdToken().getPayload().getEmail();
@@ -66,24 +67,23 @@ public class GoogleService implements IGoogle {
                 credentialDto.put("scope", tokenResponse.getScope());
 
                 credentialService.createOrUpdateCredential(user, CredentialType.GOOGLE, credentialDto);
-            }
-            return new MessageResponse("success");
+                return new MessageResponse("success");
 
-
-        } catch (IOException e) {
-            if (e instanceof HttpResponseException httpResponseException &&
-                    httpResponseException.getStatusCode() == HttpStatus.BAD_REQUEST.value()) {
-                try {
-                    String errorContent = httpResponseException.getContent();
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    Error errorResponse = objectMapper.readValue(errorContent, Error.class);
-                    return new MessageResponse(errorResponse.getError());
-                } catch (Exception e2) {
-                    System.out.println("Error parsing error response: " + e2.getMessage());
+            } catch (IOException e) {
+                if (e instanceof HttpResponseException httpResponseException &&
+                        httpResponseException.getStatusCode() == HttpStatus.BAD_REQUEST.value()) {
+                    try {
+                        String errorContent = httpResponseException.getContent();
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        Error errorResponse = objectMapper.readValue(errorContent, Error.class);
+                        return new MessageResponse(errorResponse.getError());
+                    } catch (Exception e2) {
+                        System.out.println("Error parsing error response: " + e2.getMessage());
+                    }
                 }
             }
-            return new MessageResponse("failed");
         }
+        return new MessageResponse("failed");
     }
 }
 
