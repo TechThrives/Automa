@@ -1,6 +1,7 @@
 package com.automa.services.interfaces;
 
 import java.util.List;
+import java.util.Map;
 
 import com.automa.entity.action.ActionGroup;
 import com.automa.entity.action.ActionInfo;
@@ -13,4 +14,6 @@ public interface IActionInfo {
     public List<ActionInfo> getActions();
     public List<ActionInfo> getByActionType(ActionType actionType);
     public List<ActionInfo> getByActionGroup(ActionGroup actionGroup);
+    public Map<ActionGroup, List<ActionInfo>> getGroupedActions();
+    public Map<ActionGroup, List<ActionInfo>> getGroupedTriggers();
 }

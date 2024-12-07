@@ -7,7 +7,7 @@
     "actionGroup": "GMAIL",
     "scope": "https://mail.google.com",
     "data": {
-      "email": "",
+      "to": "",
       "subject": "",
       "message": ""
     },

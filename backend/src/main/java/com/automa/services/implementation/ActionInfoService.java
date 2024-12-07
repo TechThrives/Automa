@@ -1,6 +1,8 @@
 package com.automa.services.implementation;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -46,5 +48,22 @@ public class ActionInfoService implements IActionInfo {
     public List<ActionInfo> getByActionGroup(ActionGroup actionGroup) {
         return actionInfoRepository.findByActionGroup(actionGroup);
     }
+
+    @Override
+    public Map<ActionGroup, List<ActionInfo>> getGroupedActions() {
+        List<ActionInfo> actions = getActions();
+
+        return actions.stream()
+                .collect(Collectors.groupingBy(ActionInfo::getActionGroup));
+    }
+
+    @Override
+    public Map<ActionGroup, List<ActionInfo>> getGroupedTriggers() {
+        List<ActionInfo> triggers = getTriggers();
+
+        return triggers.stream()
+                .collect(Collectors.groupingBy(ActionInfo::getActionGroup));
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.automa.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,12 +55,14 @@ public class ActionInfoController {
         return new ResponseEntity<>(actionInfoService.getByActionGroup(actionGroup), HttpStatus.OK);
     }
 
-    @GetMapping("/groups")
-    public ResponseEntity<ActionGroup[]> getGroups() {
-        return new ResponseEntity<>(ActionGroup.values(), HttpStatus.OK);
+    @GetMapping("/group/triggers")
+    public ResponseEntity<Map<ActionGroup, List<ActionInfo>>> getGroupedTriggers() {
+        return new ResponseEntity<>(actionInfoService.getGroupedTriggers(), HttpStatus.OK);
     }
 
-
-    
-    
+    @GetMapping("/group/actions")
+    public ResponseEntity<Map<ActionGroup, List<ActionInfo>>> getGroupedActions() {
+        return new ResponseEntity<>(actionInfoService.getGroupedActions(), HttpStatus.OK);
+    }
+ 
 }
