@@ -7,6 +7,7 @@ import SignIn from "./pages/auth/SignIn";
 import SignUp from "./pages/auth/SignUp";
 import DashboardLayout from "./components/DashboardLayout";
 import Profile from "./pages/dashboard/Profile";
+import GoogleCallback from "./pages/dashboard/GoogleCallback";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="connect" element={<ConnectAuth />} />
         </Route>
+          <Route path="/connect/google/callback" element={<GoogleCallback />} />
         <Route path="/dashboard/workflow/:id" element={<Workflow />} />
       </Routes>
     </Router>
