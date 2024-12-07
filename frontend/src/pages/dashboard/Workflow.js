@@ -48,12 +48,10 @@ const Flow = () => {
     (deleted) => {
       setEdges(
         deleted.reduce((acc, node) => {
-          console.log(acc);
           const connectedEdges = getConnectedEdges([node], edges);
           const remainingEdges = acc.filter(
             (edge) => !connectedEdges.includes(edge)
           );
-          console.log(remainingEdges);
           return remainingEdges;
         }, edges)
       );

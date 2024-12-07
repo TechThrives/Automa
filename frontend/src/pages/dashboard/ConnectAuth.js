@@ -18,8 +18,6 @@ const ConnectAuth = () => {
     response_type: "code",
   };
 
-  console.log("CONFIG", CONFIG);
-
   const handleLogin = useCallback(() => {
     try {
       const params = new URLSearchParams({

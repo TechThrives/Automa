@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { Navigate, useNavigate } from "react-router-dom";
+import axiosConfig from "../../utils/axiosConfig";
+import toast from "react-hot-toast";
+import { useAppContext } from "../../context/AppContext";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -8,10 +12,22 @@ export default function SignIn() {
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const { user } = useAppContext();
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign-in logic here
-    console.log("Sign in attempted with:", formData);
+    try {
+      const response = await axiosConfig.post("/api/auth/sign-in", formData);
+      if (response.data) {
+        localStorage.setItem("jwtToken", response.data.jwtToken);
+        toast.success("Signed in successfully");
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -19,7 +35,9 @@ export default function SignIn() {
     setFormData({ ...formData, [name]: value });
   };
 
-  return (
+  return user ? (
+    <Navigate to="/dashboard" />
+  ) : (
     <div className="flex min-h-screen bg-gray-50">
       <div className="flex flex-col w-full max-w-md mx-auto p-4 sm:p-6 lg:p-8">
         <div className="flex items-center justify-center gap-2 mb-6">

@@ -65,7 +65,7 @@ public class AuthService implements IAuth {
                     user.setProfileImageUrl(profileImageUrl);
                     user.setRole(Role.USER);
                     applicationUserRepository.save(user);
-                    return new ResponseEntity<>(new MessageResponse("User Created Successfully!!!"), HttpStatus.OK);
+                    return new ResponseEntity<>(new MessageResponse("User has been Signup Successfully!!!"), HttpStatus.OK);
                 }
                 return new ResponseEntity<>(new MessageResponse("Phone Number Already Exists!!!"),
                         HttpStatus.BAD_REQUEST);
