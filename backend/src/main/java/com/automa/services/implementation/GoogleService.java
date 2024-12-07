@@ -1,6 +1,7 @@
 package com.automa.services.implementation;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,7 @@ public class GoogleService implements IGoogle {
                 credentialDto.put("accessToken", tokenResponse.getAccessToken());
                 credentialDto.put("refreshToken", tokenResponse.getRefreshToken());
                 credentialDto.put("expiresInSeconds", tokenResponse.getExpiresInSeconds());
-                credentialDto.put("scope", tokenResponse.getScope());
+                credentialDto.put("scope", Arrays.asList(tokenResponse.getScope().split(" ")));
 
                 credentialService.createOrUpdateCredential(user, CredentialType.GOOGLE, credentialDto);
                 return new MessageResponse("success");

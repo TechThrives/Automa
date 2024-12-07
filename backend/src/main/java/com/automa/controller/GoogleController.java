@@ -3,16 +3,19 @@ package com.automa.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.automa.dto.MessageResponse;
 import com.automa.services.interfaces.IGoogle;
-import com.automa.utils.ResponseUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 @RestController
+@Validated
 @RequestMapping("/api/google")
 public class GoogleController {
 
@@ -23,25 +26,22 @@ public class GoogleController {
     }
 
     @GetMapping("/callback")
-    public void googleCallback(
+    public ResponseEntity<MessageResponse> googleCallback(
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String error,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+            HttpServletRequest request) {
         try {
             if (error != null) {
-                ResponseUtils.sendHtmlResponseWithPostMessageScript(response, error);
-                return;
+                return new ResponseEntity<>(new MessageResponse(error), HttpStatus.BAD_REQUEST);
             } else if (code != null) {
                 MessageResponse messageResponse = googleService.googleCallback(code, request);
-                ResponseUtils.sendHtmlResponseWithPostMessageScript(response, messageResponse.getMessage());
-                return;
+                return new ResponseEntity<>(messageResponse, HttpStatus.OK);
             }
 
-            ResponseUtils.sendJsonResponse(response, new MessageResponse("Invalid request"));
+            return new ResponseEntity<>(new MessageResponse("Invalid Request"), HttpStatus.BAD_REQUEST);
 
         } catch (Exception e) {
-            ResponseUtils.sendHtmlResponseWithPostMessageScript(response, e.getMessage());
+            return new ResponseEntity<>(new MessageResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
     }
 
