@@ -1,15 +1,14 @@
 import { useCallback } from "react";
 import { addEdge, useReactFlow } from "@xyflow/react";
 
-export const useFlowEdges = () => {
-  const { setEdges, getNode } = useReactFlow();
+const useFlowEdges = () => {
+  const { setEdges } = useReactFlow();
 
   const onConnect = useCallback((params) => {
-    const sourceNode = getNode(params.source);
     params.type = "normalEdge";
     params.id = `${params.source}-${params.target}`;
 
-    setEdges((eds) => addEdge({ ...params, input: sourceNode.output }, eds));
+    setEdges((eds) => addEdge({ ...params }, eds));
   }, []);
 
   const isValidConnection = useCallback((params) => {
@@ -21,3 +20,5 @@ export const useFlowEdges = () => {
     isValidConnection,
   };
 };
+
+export default useFlowEdges;

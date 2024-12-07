@@ -2,22 +2,22 @@ import React, { useState } from "react";
 import { useWorkflow } from "../../context/WorkflowContext";
 import { useReactFlow } from "@xyflow/react";
 
-const YoutubeInfo = () => {
+const Time = () => {
   const { setNodes } = useReactFlow();
   const { selectedNode: node, setIsOpen } = useWorkflow();
-  const [url, setUrl] = useState(node.data.url);
-  const [isValid, setIsValid] = useState(node.data.url.trim().length >= 3);
+  const [dateTime, setDateTime] = useState(node.data.dateTime);
+  const [isValid, setIsValid] = useState(new Date(node.data.dateTime) > new Date());
 
-  const handleUrlChange = (e) => {
+  const handleDateTimeChange = (e) => {
     const value = e.target.value;
-    setUrl(value);
-    setIsValid(value.trim().length >= 3);
+    setIsValid(new Date(value) > new Date());
+    setDateTime(value);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isValid) {
-      const newNode = { ...node, data: { url } };
+      const newNode = { ...node, data: {...node.data, dateTime } };
       setNodes((nds) => nds.concat(newNode));
       setIsOpen(false);
     }
@@ -25,29 +25,29 @@ const YoutubeInfo = () => {
   return (
     <form onSubmit={handleSubmit} className="p-4">
       <h2 className="text-lg font-semibold text-gray-900 mb-3">
-        Enter Your Information
+        Schedule Time
       </h2>
       <div className="mb-3">
         <label
-          htmlFor="name"
+          htmlFor="dateTime"
           className="block text-xs font-medium text-gray-700 mb-1"
         >
-          Name
+          DateTime
         </label>
         <input
-          type="text"
-          id="url"
-          name="url"
-          value={url}
-          onChange={handleUrlChange}
+          type="datetime-local"
+          id="dateTime"
+          name="dateTime"
+          value={dateTime}
+          onChange={handleDateTimeChange}
           className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
             isValid ? "border-gray-300" : "border-red-500"
           }`}
-          placeholder="Enter your url"
+          placeholder="Schedule Time"
         />
         {!isValid && (
           <p className="mt-1 text-xs text-red-500">
-            Name must be at least 3 characters long
+            Time must be in future.
           </p>
         )}
       </div>
@@ -64,4 +64,4 @@ const YoutubeInfo = () => {
   );
 };
 
-export default YoutubeInfo;
+export default Time;

@@ -1,36 +1,30 @@
-import { FaYoutube, FaTwitter, FaFacebook } from "react-icons/fa";
 import NodeWithLogo from "./design/NodeWithLogo";
+import IconMapping from "../constants/IconMapping";
+import { isTrigger } from "../constants/ActionUtils";
 
-export const nodeTypes = {
-  youtubeInfo: (props) => (
+const nodeTypes = {
+  TIME: (props) => (
     <NodeWithLogo
       {...props}
       nodeInfo={{
-        icon: FaYoutube,
-        text: "Youtube Info Node",
-        iconColor: "text-red-500",
+        icon: IconMapping[props.type],
+        text: "Schedule Time",
+        iconColor: "text-gray-500",
+        isTrigger: isTrigger(props.type),
       }}
     />
   ),
-  twitterInfo: (props) => (
+  SENDMAIL: (props) => (
     <NodeWithLogo
       {...props}
       nodeInfo={{
-        icon: FaTwitter,
-        text: "Twitter Info Node",
-        iconColor: "text-blue-400",
-      }}
-    />
-  ),
-  facebookInfo: (props) => (
-    <NodeWithLogo
-      {...props}
-      nodeInfo={{
-        icon: FaFacebook,
-        text: "Facebook Info Node",
-        iconColor: "text-blue-600",
+        icon: IconMapping[props.type],
+        text: "Send Mail Node",
+        iconColor: "text-green-500",
+        isTrigger: isTrigger(props.type),
       }}
     />
   ),
 };
 
+export default nodeTypes;

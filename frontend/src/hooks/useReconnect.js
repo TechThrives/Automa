@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { reconnectEdge, useReactFlow } from "@xyflow/react";
 import { useWorkflow } from "../context/WorkflowContext";
 
-export const useReconnect = () => {
+const useReconnect = () => {
 
   const { edgeReconnectSuccessful} = useWorkflow();
 
@@ -33,3 +33,5 @@ export const useReconnect = () => {
 
   return { onReconnectStart, onReconnect, onReconnectEnd };
 };
+
+export default useReconnect;

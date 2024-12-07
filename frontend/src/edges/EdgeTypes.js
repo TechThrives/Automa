@@ -1,5 +1,7 @@
 import NormalEdge from "./design/NormalEdge";
 
-export const edgeTypes = {
+const edgeTypes = {
     normalEdge: NormalEdge,
 };
+
+export default edgeTypes;

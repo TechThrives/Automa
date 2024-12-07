@@ -2,31 +2,9 @@ import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
 import { useWorkflow } from "../context/WorkflowContext";
 
-export const useDragAndDrop = () => {
+const useDragAndDrop = () => {
   const { screenToFlowPosition, setNodes } = useReactFlow();
-  const{ type, setSelectedNode, setIsOpen } = useWorkflow();
-
-  const initNodeData = (type) => {
-    switch (type) {
-      case "youtubeInfo":
-        return { url: "" };
-      case "twitterInfo":
-        return { profile: "" };
-      default:
-        return { label: "Node" };
-    }
-  };
-
-  const initNodeOutput = (type) => {
-    switch (type) {
-      case "youtubeInfo":
-        return { title: "", description: "", viewCount: "", likeCount: "", commentCount: "" };
-      case "twitterInfo":
-        return { profile: "" };
-      default:
-        return { label: "Node" };
-    }
-  };
+  const{ dragNode, setSelectedNode, setIsOpen } = useWorkflow();
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -37,7 +15,7 @@ export const useDragAndDrop = () => {
     (event) => {
       event.preventDefault();
 
-      if (!type) return;
+      if (!dragNode) return;
 
       const position = screenToFlowPosition({
         x: event.clientX,
@@ -46,17 +24,20 @@ export const useDragAndDrop = () => {
 
       const newNode = {
         id: `node-${Date.now()}`,
-        type,
+        name: dragNode.name,
+        type: dragNode.actionType,
         position,
-        data: initNodeData(type),
-        output: initNodeOutput(type),
+        data: dragNode.data,
+        output: dragNode.output,
       };
 
       setSelectedNode(newNode);
       setIsOpen(true);
     },
-    [screenToFlowPosition, type, setNodes, setIsOpen]
+    [screenToFlowPosition, dragNode, setNodes, setIsOpen]
   );
 
   return { onDragOver, onDrop };
 };
+
+export default useDragAndDrop;

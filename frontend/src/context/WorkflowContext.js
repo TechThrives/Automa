@@ -3,7 +3,7 @@ import { createContext, useContext, useRef, useState } from "react";
 const WorkflowContext = createContext([null, (_) => {}]);
 
 export const WorkflowProvider = ({ children }) => {
-  const [type, setType] = useState(null);
+  const [dragNode, setDragNode] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const [selectedNode, setSelectedNode] = useState(null);
   const edgeReconnectSuccessful = useRef(true);
@@ -11,8 +11,8 @@ export const WorkflowProvider = ({ children }) => {
   return (
     <WorkflowContext.Provider
       value={{
-        type,
-        setType,
+        dragNode,
+        setDragNode,
         isOpen,
         setIsOpen,
         selectedNode,

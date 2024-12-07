@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FiLink } from "react-icons/fi";
+import { FiLink, FiPieChart, FiPlus } from "react-icons/fi";
 import {
   FiMenu,
   FiHome,
@@ -9,10 +9,8 @@ import {
   FiChevronUp,
   FiUser,
   FiLogOut,
-  FiPieChart,
-  FiTrendingUp,
-  FiClock,
 } from "react-icons/fi";
+import { GoWorkflow } from "react-icons/go";
 import { IoMdClose } from "react-icons/io";
 import { useAppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
@@ -35,12 +33,11 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
       href: "/dashboard",
     },
     {
-      name: "Analytics",
-      icon: FiBarChart,
+      name: "Workflow",
+      icon: GoWorkflow,
       subItems: [
-        { name: "Overview", href: "/analytics/overview", icon: FiPieChart },
-        { name: "Reports", href: "/analytics/reports", icon: FiTrendingUp },
-        { name: "Real-time", href: "/analytics/real-time", icon: FiClock },
+        { name: "Overview", href: "workflow", icon: FiPieChart },
+        { name: "Create New", href: "workflow/reports", icon: FiPlus },
       ],
     },
     {

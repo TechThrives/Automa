@@ -1,14 +1,10 @@
 import { memo } from "react";
-import { Handle, Position, useReactFlow } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 
 const NodeWithLogo = (props) => {
   const { nodeInfo, id } = props;
-  const { setNodes } = useReactFlow();
-  const { icon: Icon, text, iconColor } = nodeInfo;
+  const { icon: Icon, text, iconColor, isTrigger } = nodeInfo;
 
-  const onRemoveButtonClick = () => {
-    setNodes((nodes) => nodes.filter((node) => node.id !== id));
-  };
 
   return (
     <div className="flex justify-center items-center flex-col p-1 rounded-lg bg-white node">
@@ -17,7 +13,7 @@ const NodeWithLogo = (props) => {
         {text}
       </p>
 
-      <Handle type="target" className="!bg-teal-500" position={Position.Left} />
+      {!isTrigger && <Handle type="target" className="!bg-teal-500" position={Position.Left} />}
       <Handle
         type="source"
         className="!bg-lime-500"

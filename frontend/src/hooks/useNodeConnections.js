@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { MarkerType, useReactFlow, useStoreApi } from "@xyflow/react";
 
-export const useNodeConnections = () => {
+const useNodeConnections = () => {
   const { setEdges } = useReactFlow();
   const store = useStoreApi();
   const { getInternalNode } = useReactFlow();
@@ -104,3 +104,5 @@ export const useNodeConnections = () => {
 
   return { onNodeDrag, onNodeDragStop };
 };
+
+export default useNodeConnections;

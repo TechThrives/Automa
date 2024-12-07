@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   ReactFlow,
   Background,
@@ -10,14 +10,15 @@ import {
   getOutgoers,
   getIncomers,
   getConnectedEdges,
+  Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { nodeTypes } from "../../nodes/NodeTypes";
-import { edgeTypes } from "../../edges/EdgeTypes";
-import { useFlowEdges } from "../../hooks/useFlowEdges";
-import { useDragAndDrop } from "../../hooks/useDragAndDrop";
-import { useNodeConnections } from "../../hooks/useNodeConnections";
-import { useReconnect } from "../../hooks/useReconnect";
+import nodeTypes from "../../nodes/NodeTypes";
+import edgeTypes from "../../edges/EdgeTypes";
+import useFlowEdges from "../../hooks/useFlowEdges";
+import useDragAndDrop from "../../hooks/useDragAndDrop";
+import useNodeConnections from "../../hooks/useNodeConnections";
+import useReconnect from "../../hooks/useReconnect";
 import { WorkflowProvider, useWorkflow } from "../../context/WorkflowContext";
 import ComponentSidebar from "../../components/ComponentSidebar";
 import Modal from "../../components/modals/Modal";
@@ -28,6 +29,7 @@ const Flow = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { onConnect, isValidConnection } = useFlowEdges();
+  const [rfInstance, setRfInstance] = useState(null);
 
   // Drag and Drop Node
   const { onDragOver, onDrop } = useDragAndDrop();
@@ -59,6 +61,13 @@ const Flow = () => {
     [nodes, edges]
   );
 
+  const onSaveWorkflow = useCallback(async () => {
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      console.log(flow);
+    }
+  }, [rfInstance]);
+
   return (
     <div className="flex h-screen">
       {isOpen && <Modal />}
@@ -83,12 +92,16 @@ const Flow = () => {
           isValidConnection={isValidConnection}
           onNodeContextMenu={onNodeContextMenu}
           onNodesDelete={onNodesDelete}
+          onInit={setRfInstance}
           fitView
         >
           <Markers />
           <Controls />
           <MiniMap />
           <Background variant="dots" gap={12} size={1} />
+          <Panel position="top-right">
+            <button onClick={onSaveWorkflow}>save</button>
+          </Panel>
         </ReactFlow>
       </div>
     </div>
