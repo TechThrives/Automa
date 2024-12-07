@@ -31,12 +31,18 @@ export function AppProvider({ children }) {
     checkAuth();
   }, [navigate]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("jwtToken");
+    setUser(null);
+    navigate("/signin");
+  };
+
   if (isLoading) {
     return "Loading...";
   }
 
   return (
-    <AppContext.Provider value={{ user, setUser, isLoading, setIsLoading }}>
+    <AppContext.Provider value={{ user, setUser, isLoading, setIsLoading, handleLogout }}>
       {children}
     </AppContext.Provider>
   );

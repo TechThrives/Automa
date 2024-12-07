@@ -11,7 +11,6 @@ import GoogleCallback from "./pages/dashboard/GoogleCallback";
 import { AppProvider } from "./context/AppContext";
 import PrivateRoute from "./utils/PrivateRoute";
 import ToastContainer from "./components/ToastContainer";
-import Logout from "./pages/auth/Logout";
 
 function App() {
   return (
@@ -19,24 +18,18 @@ function App() {
       <AppProvider>
         <ToastContainer />
         <Routes>
+          {/* Public Routes */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/logout" element={<Logout />} />
-          <Route path="/" element={<PrivateRoute />}>
-          <Route
-            path="/dashboard"
-            element={
-                <DashboardLayout />
-            }
-          >
-            <Route index element={<Home />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="connect" element={<ConnectAuth />} />
-          </Route>
-            <Route
-              path="/connect/google/callback"
-              element={<GoogleCallback />}
-            />
+
+          {/* Protected Routes */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/connect/google/callback" element={<GoogleCallback />} />
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<Home />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="connect" element={<ConnectAuth />} />
+            </Route>
             <Route path="/dashboard/workflow/:id" element={<Workflow />} />
           </Route>
         </Routes>

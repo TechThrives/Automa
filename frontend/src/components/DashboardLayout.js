@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import { FiMenu } from "react-icons/fi";
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 const DashboardLayout = () => {
   const location = window.location.pathname;
+  const { user, isLoading } = useAppContext();
   const headerTitle = location.split("dashboard/")[1] || "Dashboard";
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [header, setHeader] = useState({
@@ -35,7 +37,9 @@ const DashboardLayout = () => {
     };
   }, []);
 
-  return (
+  return isLoading ? (
+    <>"Loading ...."</>
+  ) : user ? (
     <div className="flex h-screen bg-white overflow-hidden">
       <Sidebar
         isMobileMenuOpen={isMobileMenuOpen}
@@ -67,6 +71,8 @@ const DashboardLayout = () => {
         </main>
       </div>
     </div>
+  ) : (
+    <Navigate to="/signin" />
   );
 };
 

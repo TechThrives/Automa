@@ -14,38 +14,45 @@ import {
   FiClock,
 } from "react-icons/fi";
 import { IoMdClose } from "react-icons/io";
-
-const menuItems = [
-  {
-    name: "Dashboard",
-    icon: FiHome,
-    href: "/dashboard",
-  },
-  {
-    name: "Analytics",
-    icon: FiBarChart,
-    subItems: [
-      { name: "Overview", href: "/analytics/overview", icon: FiPieChart },
-      { name: "Reports", href: "/analytics/reports", icon: FiTrendingUp },
-      { name: "Real-time", href: "/analytics/real-time", icon: FiClock },
-    ],
-  },
-  {
-    name: "Settings",
-    icon: FiSettings,
-    subItems: [
-      { name: "Profile", href: "/dashboard/profile", icon: FiUser },
-      { name: "Connect", href: "/dashboard/connect", icon: FiLink },
-      { name: "Logout", href: "/logout", icon: FiLogOut },
-    ],
-  },
-];
+import { useAppContext } from "../context/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(
+    window.innerWidth > 768 ? false : true
+  );
   const [expandedSubMenus, setExpandedSubMenus] = useState({});
   const [activeMenu, setActiveMenu] = useState(null);
   const sidebarRef = useRef(null);
+  const navigate = useNavigate();
+
+  const { handleLogout } = useAppContext();
+
+  const menuItems = [
+    {
+      name: "Dashboard",
+      icon: FiHome,
+      href: "/dashboard",
+    },
+    {
+      name: "Analytics",
+      icon: FiBarChart,
+      subItems: [
+        { name: "Overview", href: "/analytics/overview", icon: FiPieChart },
+        { name: "Reports", href: "/analytics/reports", icon: FiTrendingUp },
+        { name: "Real-time", href: "/analytics/real-time", icon: FiClock },
+      ],
+    },
+    {
+      name: "Settings",
+      icon: FiSettings,
+      subItems: [
+        { name: "Profile", href: "/dashboard/profile", icon: FiUser },
+        { name: "Connect", href: "/dashboard/connect", icon: FiLink },
+        { name: "Logout", onClick: handleLogout, icon: FiLogOut },
+      ],
+    },
+  ];
 
   const toggleSidebar = () => {
     if (window.innerWidth > 768) {
@@ -53,6 +60,7 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
     } else {
       toggleMobileMenu();
     }
+    setActiveMenu(null);
   };
 
   const toggleSubMenu = (menuName) => {
@@ -63,10 +71,12 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
     setActiveMenu(menuName);
   };
 
-  const handleMenuItemClick = () => {
-    if (window.innerWidth <= 768) {
-      setIsExpanded(true);
-      toggleMobileMenu();
+  const handleMenuItemClick = (item) => {
+    if (item.onClick) {
+      item.onClick();
+    }
+    if (item.href) {
+      navigate(item.href);
     }
   };
 
@@ -160,12 +170,10 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
                         >
                           {item.subItems.map((subItem) => (
                             <li key={subItem.name}>
-                              <a
-                                href={subItem.href}
-                                className="flex items-center pl-10 pr-4 py-2 rounded-md hover:bg-gray-200"
+                              <button
+                                className="flex w-full items-center pl-10 pr-4 py-2 rounded-md hover:bg-gray-200"
                                 onClick={() => {
-                                  setActiveMenu(null);
-                                  handleMenuItemClick();
+                                  handleMenuItemClick(subItem);
                                 }}
                               >
                                 <subItem.icon
@@ -173,7 +181,7 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
                                   aria-hidden="true"
                                 />
                                 <span>{subItem.name}</span>
-                              </a>
+                              </button>
                             </li>
                           ))}
                         </ul>
@@ -181,12 +189,11 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
                     </div>
                   ) : (
                     <div>
-                      <a
-                      href={item.href}
-                        onClick={() => toggleSubMenu(item.name)}
+                      <button
                         className={`flex items-center w-full p-2 rounded-md hover:bg-gray-200 ${
                           isExpanded ? "justify-between" : "justify-center"
                         }`}
+                        onClick={() => handleMenuItemClick(item)}
                         aria-expanded={expandedSubMenus[item.name]}
                       >
                         <div className="flex items-center">
@@ -195,7 +202,7 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
                             <span className="ml-3">{item.name}</span>
                           )}
                         </div>
-                      </a>
+                      </button>
                     </div>
                   )}
                 </div>
