@@ -23,6 +23,7 @@ public class ApplicationUserService implements IApplicationUser {
         this.applicationUserRepository = applicationUserRepository;
     }
 
+    @Override
     public List<ApplicationUserResponse> getAll() {
         List<ApplicationUser> users = applicationUserRepository.findAll();
 
@@ -35,6 +36,7 @@ public class ApplicationUserService implements IApplicationUser {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public ApplicationUserResponse findByUsername(String username) {
         ApplicationUser user = applicationUserRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User Not Found!!!"));
@@ -44,6 +46,13 @@ public class ApplicationUserService implements IApplicationUser {
             return response;
     }
 
+    public ApplicationUser findByEmail(String username) {
+        ApplicationUser user = applicationUserRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User Not Found!!!"));
+        return user;
+    }
+
+    @Override
     public ApplicationUserResponse findById(UUID userId) {
         ApplicationUser user = applicationUserRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found!!!"));

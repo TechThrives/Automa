@@ -11,7 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import com.automa.config.GoogleConfig;
 import com.automa.dto.MessageResponse;
 import com.automa.entity.credential.CredentialType;
-import com.automa.repository.ApplicationUserRepository;
 import com.automa.entity.ApplicationUser;
 import com.automa.services.interfaces.IGoogle;
 import com.automa.utils.ContextUtils;
@@ -29,14 +28,14 @@ import lombok.NoArgsConstructor;
 public class GoogleService implements IGoogle {
 
     private final GoogleConfig googleConfig;
-    private final ApplicationUserRepository applicationUserRepository;
+    private final ApplicationUserService applicationUserService;
     private final CredentialService credentialService;
 
     public GoogleService(GoogleConfig googleConfig,
-            ApplicationUserRepository applicationUserRepository,
+            ApplicationUserService applicationUserService,
             CredentialService credentialService) {
         this.googleConfig = googleConfig;
-        this.applicationUserRepository = applicationUserRepository;
+        this.applicationUserService = applicationUserService;
         this.credentialService = credentialService;
     }
 
@@ -45,9 +44,7 @@ public class GoogleService implements IGoogle {
 
         try {
             String username = ContextUtils.getUsername();
-            ApplicationUser user = applicationUserRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User Not Found!!!"));
-
+            ApplicationUser user = applicationUserService.findByEmail(username);
             GoogleTokenResponse tokenResponse = googleConfig.exchangeCodeForToken(code);
             String email = tokenResponse.parseIdToken().getPayload().getEmail();
 
