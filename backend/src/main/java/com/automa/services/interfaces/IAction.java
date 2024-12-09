@@ -1,10 +1,9 @@
 package com.automa.services.interfaces;
 
-import java.util.List;
+import java.util.UUID;
 
 import com.automa.entity.action.Action;
 
 public interface IAction {
-
-    List<Action> runMethod();
+    public Action findById(UUID id);
 }

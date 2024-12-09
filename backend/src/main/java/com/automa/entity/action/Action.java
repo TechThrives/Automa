@@ -7,8 +7,8 @@ import java.util.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import com.automa.entity.Flow;
 import com.automa.entity.Workflow;
+import com.automa.entity.flow.Flow;
 
 @Data
 @Entity
@@ -18,7 +18,6 @@ import com.automa.entity.Workflow;
 public class Action {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false, updatable = false, unique = true)
     private UUID id;
 
@@ -29,20 +28,16 @@ public class Action {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BaseType type;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ActionType actionType;
+    private ActionType type;
 
     @OneToOne(mappedBy = "action", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Position position;
 
-    @OneToMany(mappedBy = "fromAction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Flow> outgoingFlows;
 
-    @OneToMany(mappedBy = "toAction", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "target", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Flow> incomingFlows;
 

@@ -41,7 +41,7 @@ public class AuthController {
             @Valid @RequestBody SignInRequest request,
             HttpServletResponse response) {
         SignInResponse signInResponse = authService.signIn(request);
-        return ResponseEntity.status(HttpStatus.OK).body(signInResponse);
+        return new ResponseEntity<>(signInResponse, HttpStatus.OK);
     }
 
     @PostMapping("/forgot-password")

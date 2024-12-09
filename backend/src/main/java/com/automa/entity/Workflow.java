@@ -1,6 +1,7 @@
 package com.automa.entity;
 
 import com.automa.entity.action.Action;
+import com.automa.entity.flow.Flow;
 
 import jakarta.persistence.*;
 import lombok.*;
