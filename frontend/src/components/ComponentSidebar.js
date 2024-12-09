@@ -9,7 +9,7 @@ const ComponentSidebar = () => {
   const [openGroups, setOpenGroups] = useState({});
   const [trigger, setTrigger] = useState({});
   const [actions, setActions] = useState({});
-  const { setDragNode } = useWorkflow();
+  const { setDragNode, hasTrigger } = useWorkflow();
 
   const getTriggers = async () => {
     try {
@@ -48,41 +48,43 @@ const ComponentSidebar = () => {
   };
 
   return (
-    <div className="w-64 bg-white text-gray-800 p-4 hidden md:block">
-      <h1 className="text-lg font-bold mb-4 sticky top-0 text-center">
+    <div className="hidden w-64 bg-white p-4 text-gray-800 md:block">
+      <h1 className="sticky top-0 mb-4 text-center text-lg font-bold">
         Components
       </h1>
-      <div className="h-[90%] overflow-y-auto hide-scrollbar">
-        <h2 className="text-md font-semibold text-gray-900 mb-3">Triggers</h2>
+      <div className="hide-scrollbar h-[90%] overflow-y-auto">
+        <h2 className="text-md mb-3 font-semibold text-gray-900">Triggers</h2>
         {Object.entries(trigger).map(([group, items], index) => (
           <div key={group} className="mb-4 bg-gray-100">
             <button
               onClick={() => toggleGroup(group)}
-              className="flex justify-between items-center w-full text-left py-2 px-3 hover:bg-gray-200 rounded transition-colors duration-200"
+              className="flex w-full items-center justify-between rounded px-3 py-2 text-left transition-colors duration-200 hover:bg-gray-200"
             >
               <span className="font-medium capitalize">{group}</span>
               {openGroups[group] ? (
-                <FiChevronDown className="w-5 h-5" />
+                <FiChevronDown className="h-5 w-5" />
               ) : (
-                <FiChevronRight className="w-5 h-5" />
+                <FiChevronRight className="h-5 w-5" />
               )}
             </button>
 
             {openGroups[group] && (
-              <div className="grid grid-cols-2 gap-2 overflow-hidden transition-all duration-200 p-2">
+              <div className="grid grid-cols-2 gap-2 overflow-hidden p-2 transition-all duration-200">
                 {items.map((component, idx) => {
                   const IconComponent = IconMapping[component.actionType];
                   return (
                     <div
                       key={idx}
-                      className="p-2 bg-gray-100 rounded text-sm flex flex-col items-center space-x-2 hover:bg-gray-200 cursor-pointer transition-colors duration-200"
-                      onDragStart={(event) =>
-                        onDragStart(event, component)
-                      }
-                      draggable
+                      className={`flex select-none flex-col items-center space-x-2 rounded bg-gray-100 p-2 text-sm transition-colors duration-200 hover:bg-gray-200 ${
+                        hasTrigger ? "cursor-not-allowed" : "cursor-pointer"
+                      }`}
+                      onDragStart={(event) => onDragStart(event, component)}
+                      draggable={!hasTrigger}
                     >
-                      <IconComponent className="w-6 h-6" />
-                      <span className="text-center text-xs">{component.name}</span>
+                      <IconComponent className="h-6 w-6" />
+                      <span className="text-center text-xs">
+                        {component.name}
+                      </span>
                     </div>
                   );
                 })}
@@ -91,36 +93,38 @@ const ComponentSidebar = () => {
           </div>
         ))}
 
-        <h2 className="text-md font-semibold text-gray-900 mb-3">Actions</h2>
+        <h2 className="text-md mb-3 font-semibold text-gray-900">Actions</h2>
         {Object.entries(actions).map(([group, items], index) => (
           <div key={group} className="mb-4 bg-gray-100">
             <button
               onClick={() => toggleGroup(group)}
-              className="flex justify-between items-center w-full text-left py-2 px-3 hover:bg-gray-200 rounded transition-colors duration-200"
+              className="flex w-full items-center justify-between rounded px-3 py-2 text-left transition-colors duration-200 hover:bg-gray-200"
             >
               <span className="font-medium capitalize">{group}</span>
               {openGroups[group] ? (
-                <FiChevronDown className="w-5 h-5" />
+                <FiChevronDown className="h-5 w-5" />
               ) : (
-                <FiChevronRight className="w-5 h-5" />
+                <FiChevronRight className="h-5 w-5" />
               )}
             </button>
 
             {openGroups[group] && (
-              <div className="grid grid-cols-2 gap-2 overflow-hidden transition-all duration-200 p-2">
+              <div className="grid grid-cols-2 gap-2 overflow-hidden p-2 transition-all duration-200">
                 {items.map((component, idx) => {
                   const IconComponent = IconMapping[component.actionType];
                   return (
                     <div
                       key={idx}
-                      className="p-2 bg-gray-100 rounded text-sm flex flex-col items-center space-x-2 hover:bg-gray-200 cursor-pointer transition-colors duration-200"
-                      onDragStart={(event) =>
-                        onDragStart(event, component)
-                      }
-                      draggable
+                      className={`flex select-none flex-col items-center space-x-2 rounded bg-gray-100 p-2 text-sm transition-colors duration-200 hover:bg-gray-200 ${
+                        !hasTrigger ? "cursor-not-allowed" : "cursor-pointer"
+                      }`}
+                      onDragStart={(event) => onDragStart(event, component)}
+                      draggable={hasTrigger}
                     >
-                      <IconComponent className="w-6 h-6" />
-                      <span className="text-center text-xs">{component.name}</span>
+                      <IconComponent className="h-6 w-6" />
+                      <span className="text-center text-xs">
+                        {component.name}
+                      </span>
                     </div>
                   );
                 })}

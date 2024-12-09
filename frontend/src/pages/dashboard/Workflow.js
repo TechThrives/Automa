@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ReactFlow,
   Background,
@@ -25,6 +25,9 @@ import Modal from "../../components/modals/Modal";
 import Markers from "../../edges/Markers";
 import axiosConfig from "../../utils/axiosConfig";
 import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
+import { validate } from "uuid";
+import { isTrigger } from "../../constants/ActionUtils";
 
 const Flow = () => {
   const { setSelectedNode, setIsOpen, isOpen } = useWorkflow();
@@ -32,6 +35,28 @@ const Flow = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { onConnect, isValidConnection } = useFlowEdges();
   const [rfInstance, setRfInstance] = useState(null);
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  const { hasTrigger, setHasTrigger } = useWorkflow();
+
+  const getWorkflow = async () => {
+    try {
+      const response = await axiosConfig.get(`/api/workflow/${id}`);
+      if (response.data) {
+        setNodes(response.data.nodes);
+        setEdges(response.data.edges);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+      setNodes([]);
+      setEdges([]);
+    }
+  };
+
+  useEffect(() => {
+    if (validate(id)) getWorkflow();
+  }, [id]);
 
   // Drag and Drop Node
   const { onDragOver, onDrop } = useDragAndDrop();
@@ -41,6 +66,32 @@ const Flow = () => {
 
   // Delete Edge on Reconnect
   const { onReconnectStart, onReconnect, onReconnectEnd } = useReconnect();
+
+  const handleNodesChange = (changes) => {
+    changes.forEach((change) => {
+      if (change.type === "add" || change.type === "remove") {
+        if (change.type === "add" && isTrigger(change.item.type)) {
+          setHasTrigger(true);
+        }
+
+        if (change.type === "remove") {
+          const removedNode = nodes.find((node) => node.id === change.id);
+          if (isTrigger(removedNode.type)) {
+            setHasTrigger(false);
+          }
+          const remainingNodes = nodes.filter(
+            (node) => node.id !== change.id
+          )
+          if(remainingNodes.some((node) => isTrigger(node.type))) {
+            setHasTrigger(true);
+          }
+        }
+      }
+    });
+
+    console.log(changes, hasTrigger);
+    onNodesChange(changes);
+  };
 
   const onNodeContextMenu = (e, node) => {
     e.preventDefault();
@@ -66,11 +117,16 @@ const Flow = () => {
   const onSaveWorkflow = useCallback(async () => {
     if (rfInstance) {
       const flow = rfInstance.toObject();
-      console.log(flow);
       try {
-        const response = await axiosConfig.post("/api/workflow/save", flow);
+        const data = {
+          ...flow,
+          ...(validate(id) && { id }),
+        };
+
+        const response = await axiosConfig.post("/api/workflow/save", data);
         if (response.data) {
-          toast.success(response.data.message);
+          toast.success("Workflow saved successfully");
+          navigate("/dashboard/workflow/" + response.data.id);
         }
       } catch (error) {
         toast.error(error.response.data.message);
@@ -86,7 +142,7 @@ const Flow = () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
+          onNodesChange={handleNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           // onNodeDrag={onNodeDrag}

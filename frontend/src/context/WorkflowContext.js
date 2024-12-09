@@ -7,12 +7,15 @@ export const WorkflowProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedNode, setSelectedNode] = useState(null);
   const edgeReconnectSuccessful = useRef(true);
+  const [hasTrigger, setHasTrigger] = useState(false);
 
   return (
     <WorkflowContext.Provider
       value={{
         dragNode,
         setDragNode,
+        hasTrigger,
+        setHasTrigger,
         isOpen,
         setIsOpen,
         selectedNode,

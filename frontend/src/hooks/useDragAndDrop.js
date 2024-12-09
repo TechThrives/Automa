@@ -1,11 +1,13 @@
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
 import { useWorkflow } from "../context/WorkflowContext";
-import { v4 } from 'uuid';
+import { v4 } from "uuid";
+import { isAction, isTrigger } from "../constants/ActionUtils";
+import toast from "react-hot-toast";
 
 const useDragAndDrop = () => {
   const { screenToFlowPosition, setNodes } = useReactFlow();
-  const{ dragNode, setSelectedNode, setIsOpen } = useWorkflow();
+  const { dragNode, setSelectedNode, setIsOpen, hasTrigger } = useWorkflow();
 
   const onDragOver = useCallback((event) => {
     event.preventDefault();
@@ -17,6 +19,16 @@ const useDragAndDrop = () => {
       event.preventDefault();
 
       if (!dragNode) return;
+
+      if (hasTrigger && isTrigger(dragNode.actionType)) {
+        toast.error("Workflow already has a trigger");
+        return;
+      }
+
+      if(!hasTrigger && isAction(dragNode.actionType)) {
+        toast.error("Workflow must have a trigger");
+        return;
+      }
 
       const position = screenToFlowPosition({
         x: event.clientX,
@@ -35,7 +47,7 @@ const useDragAndDrop = () => {
       setSelectedNode(newNode);
       setIsOpen(true);
     },
-    [screenToFlowPosition, dragNode, setNodes, setIsOpen]
+    [screenToFlowPosition, dragNode, setNodes, setIsOpen],
   );
 
   return { onDragOver, onDrop };

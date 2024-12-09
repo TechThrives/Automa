@@ -31,6 +31,7 @@ function App() {
               <Route path="connect" element={<ConnectAuth />} />
             </Route>
             <Route path="/dashboard/workflow/:id" element={<Workflow />} />
+            <Route path="/dashboard/workflow" element={<Workflow />} />
           </Route>
         </Routes>
       </AppProvider>
