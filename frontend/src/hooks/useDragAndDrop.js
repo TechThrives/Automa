@@ -1,6 +1,7 @@
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
 import { useWorkflow } from "../context/WorkflowContext";
+import { v4 } from 'uuid';
 
 const useDragAndDrop = () => {
   const { screenToFlowPosition, setNodes } = useReactFlow();
@@ -23,7 +24,7 @@ const useDragAndDrop = () => {
       });
 
       const newNode = {
-        id: `node-${Date.now()}`,
+        id: v4(),
         name: dragNode.name,
         type: dragNode.actionType,
         position,

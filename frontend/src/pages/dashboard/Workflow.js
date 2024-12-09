@@ -23,6 +23,8 @@ import { WorkflowProvider, useWorkflow } from "../../context/WorkflowContext";
 import ComponentSidebar from "../../components/ComponentSidebar";
 import Modal from "../../components/modals/Modal";
 import Markers from "../../edges/Markers";
+import axiosConfig from "../../utils/axiosConfig";
+import toast from "react-hot-toast";
 
 const Flow = () => {
   const { setSelectedNode, setIsOpen, isOpen } = useWorkflow();
@@ -65,6 +67,14 @@ const Flow = () => {
     if (rfInstance) {
       const flow = rfInstance.toObject();
       console.log(flow);
+      try {
+        const response = await axiosConfig.post("/api/workflow/save", flow);
+        if (response.data) {
+          toast.success(response.data.message);
+        }
+      } catch (error) {
+        toast.error(error.response.data.message);
+      }
     }
   }, [rfInstance]);
 

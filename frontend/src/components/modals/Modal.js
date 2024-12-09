@@ -25,7 +25,10 @@ const Modal = () => {
   };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center p-4 z-40">
-      <p className="text-white">{JSON.stringify(previousNodesData, null, 2)}</p>
+      <p className="text-white">
+        {Object.entries(previousNodesData).length > 0 &&
+          JSON.stringify(previousNodesData, null, 2)}
+      </p>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-sm">
         <IoCloseSharp className="mt-4 mr-4 float-right" onClick={handleClose} />
         {selectedNode.type === "TIME" && <Time />}
