@@ -29,11 +29,11 @@ public class Workflow {
 
     @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<Action> actions;
+    private List<Action> actions = new ArrayList<>();
 
     @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<Flow> flows;
+    private List<Flow> flows = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean isActive = true;

@@ -21,7 +21,11 @@ public class ActionService implements IAction {
 
     @Override
     public Action findById(UUID id) {
-        return actionRepository.findById(id).orElseThrow(() -> new RuntimeException("Action not found"));
+        return actionRepository.findById(id).orElseGet(() -> new Action());
+    }
+
+    public void delete(UUID id) {
+        actionRepository.deleteById(id);
     }
 
 }

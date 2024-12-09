@@ -2,6 +2,7 @@ package com.automa.services.implementation;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -22,33 +23,82 @@ import com.automa.repository.WorkflowRepository;
 import com.automa.services.interfaces.IWorkflow;
 import com.automa.utils.ContextUtils;
 
+import jakarta.transaction.Transactional;
+
 @Service
 @Validated
 public class WorkflowService implements IWorkflow {
 
     private final WorkflowRepository workflowRepository;
     private final ApplicationUserService applicationUserService;
+    private final ActionService actionService;
     private final ActionInfoService actionInfoService;
+    private final FlowService flowService;
+    private final PositionService positionService;
 
     public WorkflowService(WorkflowRepository workflowRepository,
             ApplicationUserService applicationUserService,
             ActionService actionService,
-            ActionInfoService actionInfoService) {
+            ActionInfoService actionInfoService,
+            FlowService flowService,
+            PositionService positionService) {
         this.workflowRepository = workflowRepository;
         this.applicationUserService = applicationUserService;
+        this.actionService = actionService;
         this.actionInfoService = actionInfoService;
+        this.flowService = flowService;
+        this.positionService = positionService;
     }
 
     @Override
+    public WorkflowRequestResponse getWorkflow(UUID id) {
+
+        Workflow workflow = workflowRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Workflow not found"));
+
+        // Build the response
+        WorkflowRequestResponse response = new WorkflowRequestResponse();
+        BeanUtils.copyProperties(workflow, response);
+
+        // Map actions to nodes
+        List<ActionRequestResponse> nodes = workflow.getActions().stream().map(action -> {
+            ActionRequestResponse node = new ActionRequestResponse();
+            BeanUtils.copyProperties(action, node);
+            PositionRequestResponse positionResponse = new PositionRequestResponse();
+            BeanUtils.copyProperties(action.getPosition(), positionResponse);
+            node.setPosition(positionResponse);
+            return node;
+        }).collect(Collectors.toList());
+
+        // Map flows to edges
+        List<FlowRequestResponse> edges = workflow.getFlows().stream().map(flow -> {
+            FlowRequestResponse edge = new FlowRequestResponse();
+            BeanUtils.copyProperties(flow, edge);
+            edge.setSource(flow.getSource().getId());
+            edge.setTarget(flow.getTarget().getId());
+            return edge;
+        }).collect(Collectors.toList());
+
+        response.setNodes(nodes);
+        response.setEdges(edges);
+
+        return response;
+    }
+
+    @Override
+    @Transactional
     public WorkflowRequestResponse saveWorkflow(WorkflowRequestResponse request) {
 
-        Workflow workflow = new Workflow();
+        Workflow workflow = workflowRepository.findById(request.getId()).orElseGet(() -> new Workflow());
         workflow.setName("Workflow");
         ApplicationUser user = applicationUserService.findByEmail(ContextUtils.getUsername());
         workflow.setUser(user);
 
-        List<Action> actions = new ArrayList<>();
-        List<Flow> flows = new ArrayList<>();
+        List<Action> existingActions = new ArrayList<>(workflow.getActions());
+        List<Flow> existingFlows = new ArrayList<>(workflow.getFlows());
+
+        List<Action> updatedActions = new ArrayList<>();
+        List<Flow> updatedFlows = new ArrayList<>();
 
         for (ActionRequestResponse actionRequest : request.getNodes()) {
             ActionInfo actionInfos = actionInfoService.getByActionType(actionRequest.getType());
@@ -60,60 +110,75 @@ public class WorkflowService implements IWorkflow {
                 }
             }
 
-            Action action = new Action();
+            Action action = actionService.findById(actionRequest.getId());
             BeanUtils.copyProperties(actionRequest, action);
             action.setOutput(actionInfos.getOutput());
             action.setWorkflow(workflow);
 
-            Position position = new Position();
+            Position position = positionService.findByActionId(action.getId());
             BeanUtils.copyProperties(actionRequest.getPosition(), position);
             position.setAction(action);
             action.setPosition(position);
-            actions.add(action);
+
+            updatedActions.add(action);
         }
 
         for (FlowRequestResponse flowRequest : request.getEdges()) {
-            Flow flow = new Flow();
-            Action targetAction = actions.stream().filter(a -> a.getId().equals(flowRequest.getTarget())).findFirst().get();
-            Action sourceAction = actions.stream().filter(a -> a.getId().equals(flowRequest.getSource())).findFirst().get();
+            Flow flow = flowService.findById(flowRequest.getId());
+            Action sourceAction = updatedActions.stream()
+                    .filter(a -> a.getId().equals(flowRequest.getSource()))
+                    .findFirst()
+                    .get();
+            Action targetAction = updatedActions.stream()
+                    .filter(a -> a.getId().equals(flowRequest.getTarget()))
+                    .findFirst()
+                    .get();
             flow.setType(flowRequest.getType());
             flow.setSource(sourceAction);
             flow.setTarget(targetAction);
             flow.setWorkflow(workflow);
-            flows.add(flow);
+            updatedFlows.add(flow);
         }
 
-        workflow.setActions(actions);
-        workflow.setFlows(flows);
+        existingActions.stream()
+                .filter(action -> !updatedActions.contains(action))
+                .forEach(action -> actionService.delete(action.getId()));
 
-        workflowRepository.save(workflow);
+        existingFlows.stream()
+                .filter(flow -> !updatedFlows.contains(flow))
+                .forEach(flow -> flowService.delete(flow.getId()));
+
+        workflow.setActions(updatedActions);
+        workflow.setFlows(updatedFlows);
+
+        workflow = workflowRepository.save(workflow);
 
         // Build the response
         WorkflowRequestResponse response = new WorkflowRequestResponse();
-    BeanUtils.copyProperties(workflow, response);
+        BeanUtils.copyProperties(workflow, response);
 
-    // Map actions to nodes
-    List<ActionRequestResponse> nodes = actions.stream().map(action -> {
-        ActionRequestResponse node = new ActionRequestResponse();
-        BeanUtils.copyProperties(action, node);
-        PositionRequestResponse positionResponse = new PositionRequestResponse();
-        BeanUtils.copyProperties(action.getPosition(), positionResponse);
-        node.setPosition(positionResponse);
-        return node;
-    }).collect(Collectors.toList());
+        // Map actions to nodes
+        List<ActionRequestResponse> nodes = workflow.getActions().stream().map(action -> {
+            ActionRequestResponse node = new ActionRequestResponse();
+            BeanUtils.copyProperties(action, node);
+            PositionRequestResponse positionResponse = new PositionRequestResponse();
+            BeanUtils.copyProperties(action.getPosition(), positionResponse);
+            node.setPosition(positionResponse);
+            return node;
+        }).collect(Collectors.toList());
 
-    // Map flows to edges
-    List<FlowRequestResponse> edges = flows.stream().map(flow -> {
-        FlowRequestResponse edge = new FlowRequestResponse();
-        BeanUtils.copyProperties(flow, edge);
-        edge.setSource(flow.getSource().getId());
-        edge.setTarget(flow.getTarget().getId());
-        return edge;
-    }).collect(Collectors.toList());
+        // Map flows to edges
+        List<FlowRequestResponse> edges = workflow.getFlows().stream().map(flow -> {
+            FlowRequestResponse edge = new FlowRequestResponse();
+            BeanUtils.copyProperties(flow, edge);
+            edge.setSource(flow.getSource().getId());
+            edge.setTarget(flow.getTarget().getId());
+            return edge;
+        }).collect(Collectors.toList());
 
-    response.setNodes(nodes);
-    response.setEdges(edges);
+        response.setNodes(nodes);
+        response.setEdges(edges);
 
-    return response;
+        return response;
     }
 }

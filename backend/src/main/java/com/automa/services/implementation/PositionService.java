@@ -21,6 +21,14 @@ public class PositionService implements IPosition {
 
     @Override
     public Position findById(UUID id) {
-        return positionRepository.findById(id).orElseThrow(() -> new RuntimeException("Position not found"));
+        return positionRepository.findById(id).orElseGet(() -> new Position());
+    }
+
+    public Position findByActionId(UUID id) {
+        Position position = positionRepository.findByActionId(id);
+        if(position == null) {
+            position = new Position();
+        }
+        return position;
     }
 }

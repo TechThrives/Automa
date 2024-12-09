@@ -21,7 +21,12 @@ public class FlowService implements IFlow {
 
     @Override
     public Flow findById(UUID id) {
-        return flowRepository.findById(id).orElseThrow(() -> new RuntimeException("Flow not found"));
+        return flowRepository.findById(id).orElseGet(() -> new Flow());
+    }
+
+    public void delete(UUID id) {
+        System.out.println("Deleting flow: " + id);
+        flowRepository.deleteById(id);
     }
 
 }

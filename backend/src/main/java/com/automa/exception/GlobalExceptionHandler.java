@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.automa.dto.MessageResponse;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -59,7 +61,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<MessageResponse> handleBadCredentialException(BadCredentialsException ex, WebRequest request) {
+    public ResponseEntity<MessageResponse> handleBadCredentialException(BadCredentialsException ex,
+            WebRequest request) {
         MessageResponse messageResponse = new MessageResponse("Bad Credentials",
                 Arrays.asList("Invalid Email or Password!!!"));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageResponse);
@@ -81,7 +84,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<MessageResponse> handleAuthenticationException(AuthenticationException ex, WebRequest request) {
+    public ResponseEntity<MessageResponse> handleAuthenticationException(AuthenticationException ex,
+            WebRequest request) {
         MessageResponse messageResponse = new MessageResponse("Authentication Error",
                 Collections.singletonList("You need to authenticate to access this resource."));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(messageResponse);
@@ -110,8 +114,18 @@ public class GlobalExceptionHandler {
                         "Our server encountered some technical issues. We're working to resolve it as quickly as possible. Please try again later."));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(messageResponse);
     }
-}
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<MessageResponse> handleMethodArgumentTypeMismatchException(
+            MethodArgumentTypeMismatchException ex, WebRequest request) {
+        MessageResponse messageResponse = new MessageResponse("Invalid Argument Type",
+                Collections.singletonList(ex.getMessage()));
+        if (ex.getRequiredType() == UUID.class) {
+            messageResponse.setMessage("Invalid UUID");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageResponse);
+    }
+}
 
 class NotFoundException extends RuntimeException {
     public NotFoundException(String message) {
