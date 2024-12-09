@@ -40,7 +40,7 @@ public class ActionInfoService implements IActionInfo {
     }
 
     @Override
-    public List<ActionInfo> getByActionType(ActionType actionType) {
+    public ActionInfo getByActionType(ActionType actionType) {
         return actionInfoRepository.findByActionType(actionType);
     }
 
@@ -64,6 +64,5 @@ public class ActionInfoService implements IActionInfo {
         return triggers.stream()
                 .collect(Collectors.groupingBy(ActionInfo::getActionGroup));
     }
-
 
 }

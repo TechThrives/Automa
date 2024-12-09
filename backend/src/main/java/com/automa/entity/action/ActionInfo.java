@@ -11,7 +11,7 @@ import lombok.*;
 
 @Data
 @Entity
-@Table(name = "action_infos", uniqueConstraints = @UniqueConstraint(columnNames = {"type", "action_type", "action_group"}))
+@Table(name = "action_infos")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActionInfo {
@@ -31,7 +31,7 @@ public class ActionInfo {
     private BaseType type;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private ActionType actionType;
 
     @Enumerated(EnumType.STRING)

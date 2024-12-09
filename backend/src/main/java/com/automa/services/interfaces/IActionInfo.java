@@ -12,7 +12,7 @@ public interface IActionInfo {
     public List<ActionInfo> getAll();
     public List<ActionInfo> getTriggers();
     public List<ActionInfo> getActions();
-    public List<ActionInfo> getByActionType(ActionType actionType);
+    public ActionInfo getByActionType(ActionType actionType);
     public List<ActionInfo> getByActionGroup(ActionGroup actionGroup);
     public Map<ActionGroup, List<ActionInfo>> getGroupedActions();
     public Map<ActionGroup, List<ActionInfo>> getGroupedTriggers();

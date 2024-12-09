@@ -15,6 +15,6 @@ import com.automa.entity.action.BaseType;
 public interface ActionInfoRepository extends JpaRepository<ActionInfo, UUID> {
     ActionInfo findByTypeAndActionTypeAndActionGroup(BaseType type, ActionType actionType, ActionGroup actionGroup);
     List<ActionInfo> findByType(BaseType type);
-    List<ActionInfo> findByActionType(ActionType actionType);
+    ActionInfo findByActionType(ActionType actionType);
     List<ActionInfo> findByActionGroup(ActionGroup actionGroup);
 }

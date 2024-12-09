@@ -46,7 +46,7 @@ public class ActionInfoController {
     }
 
     @GetMapping("/actionType/{actionType}")
-    public ResponseEntity<List<ActionInfo>> getByActionType(@PathVariable ActionType actionType) {
+    public ResponseEntity<ActionInfo> getByActionType(@PathVariable ActionType actionType) {
         return new ResponseEntity<>(actionInfoService.getByActionType(actionType), HttpStatus.OK);
     }
 
