@@ -7,8 +7,6 @@ import {
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
-  getOutgoers,
-  getIncomers,
   getConnectedEdges,
   Panel,
 } from "@xyflow/react";
@@ -44,13 +42,19 @@ const Flow = () => {
     try {
       const response = await axiosConfig.get(`/api/workflow/${id}`);
       if (response.data) {
-        setNodes(response.data.nodes);
-        setEdges(response.data.edges);
+        const { nodes, edges } = response.data;
+
+        setNodes(nodes);
+        setEdges(edges);
+
+        const hasTriggerNode = nodes.some((node) => isTrigger(node.type));
+        setHasTrigger(hasTriggerNode);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Failed to load workflow.");
       setNodes([]);
       setEdges([]);
+      setHasTrigger(false);
     }
   };
 
@@ -76,20 +80,19 @@ const Flow = () => {
 
         if (change.type === "remove") {
           const removedNode = nodes.find((node) => node.id === change.id);
-          if (isTrigger(removedNode.type)) {
-            setHasTrigger(false);
-          }
-          const remainingNodes = nodes.filter(
-            (node) => node.id !== change.id
-          )
-          if(remainingNodes.some((node) => isTrigger(node.type))) {
-            setHasTrigger(true);
+          if (removedNode && isTrigger(removedNode.type)) {
+            const remainingNodes = nodes.filter(
+              (node) => node.id !== change.id,
+            );
+            const hasAnotherTrigger = remainingNodes.some((node) =>
+              isTrigger(node.type),
+            );
+            setHasTrigger(hasAnotherTrigger);
           }
         }
       }
     });
 
-    console.log(changes, hasTrigger);
     onNodesChange(changes);
   };
 
@@ -105,13 +108,13 @@ const Flow = () => {
         deleted.reduce((acc, node) => {
           const connectedEdges = getConnectedEdges([node], edges);
           const remainingEdges = acc.filter(
-            (edge) => !connectedEdges.includes(edge)
+            (edge) => !connectedEdges.includes(edge),
           );
           return remainingEdges;
-        }, edges)
+        }, edges),
       );
     },
-    [nodes, edges]
+    [nodes, edges],
   );
 
   const onSaveWorkflow = useCallback(async () => {
@@ -138,7 +141,7 @@ const Flow = () => {
     <div className="flex h-screen">
       {isOpen && <Modal />}
       <ComponentSidebar />
-      <div className="flex-1 bg-gray-100 h-full p-6">
+      <div className="h-full flex-1 bg-gray-100 p-6">
         <ReactFlow
           nodes={nodes}
           edges={edges}

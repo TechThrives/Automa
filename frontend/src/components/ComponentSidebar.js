@@ -59,12 +59,13 @@ const ComponentSidebar = () => {
             <button
               onClick={() => toggleGroup(group)}
               className="flex w-full items-center justify-between rounded px-3 py-2 text-left transition-colors duration-200 hover:bg-gray-200"
+              aria-expanded={openGroups[group]}
             >
               <span className="font-medium capitalize">{group}</span>
               {openGroups[group] ? (
-                <FiChevronDown className="h-5 w-5" />
+                <FiChevronDown className="h-5 w-5" aria-hidden="true" />
               ) : (
-                <FiChevronRight className="h-5 w-5" />
+                <FiChevronRight className="h-5 w-5" aria-hidden="true" />
               )}
             </button>
 
@@ -81,7 +82,7 @@ const ComponentSidebar = () => {
                       onDragStart={(event) => onDragStart(event, component)}
                       draggable={!hasTrigger}
                     >
-                      <IconComponent className="h-6 w-6" />
+                      <IconComponent className="h-6 w-6" aria-hidden="true" />
                       <span className="text-center text-xs">
                         {component.name}
                       </span>
@@ -99,12 +100,13 @@ const ComponentSidebar = () => {
             <button
               onClick={() => toggleGroup(group)}
               className="flex w-full items-center justify-between rounded px-3 py-2 text-left transition-colors duration-200 hover:bg-gray-200"
+              aria-expanded={openGroups[group]}
             >
               <span className="font-medium capitalize">{group}</span>
               {openGroups[group] ? (
-                <FiChevronDown className="h-5 w-5" />
+                <FiChevronDown className="h-5 w-5" aria-hidden="true" />
               ) : (
-                <FiChevronRight className="h-5 w-5" />
+                <FiChevronRight className="h-5 w-5" aria-hidden="true" />
               )}
             </button>
 
@@ -121,7 +123,7 @@ const ComponentSidebar = () => {
                       onDragStart={(event) => onDragStart(event, component)}
                       draggable={hasTrigger}
                     >
-                      <IconComponent className="h-6 w-6" />
+                      <IconComponent className="h-6 w-6" aria-hidden="true" />
                       <span className="text-center text-xs">
                         {component.name}
                       </span>

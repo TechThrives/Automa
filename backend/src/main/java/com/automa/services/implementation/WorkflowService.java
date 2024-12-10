@@ -17,6 +17,7 @@ import com.automa.entity.ApplicationUser;
 import com.automa.entity.Workflow;
 import com.automa.entity.action.Action;
 import com.automa.entity.action.ActionInfo;
+import com.automa.entity.action.BaseType;
 import com.automa.entity.action.Position;
 import com.automa.entity.flow.Flow;
 import com.automa.repository.WorkflowRepository;
@@ -100,6 +101,9 @@ public class WorkflowService implements IWorkflow {
         List<Action> updatedActions = new ArrayList<>();
         List<Flow> updatedFlows = new ArrayList<>();
 
+        int triggerCount = 0;
+        int actionCount = 0;
+
         for (ActionRequestResponse actionRequest : request.getNodes()) {
             ActionInfo actionInfos = actionInfoService.getByActionType(actionRequest.getType());
 
@@ -121,6 +125,22 @@ public class WorkflowService implements IWorkflow {
             action.setPosition(position);
 
             updatedActions.add(action);
+
+            if (actionInfos.getType() == BaseType.TRIGGER) {
+                triggerCount++;
+            }
+
+            if(actionInfos.getType() == BaseType.ACTION) {
+                actionCount++;
+            }
+        }
+
+        if (triggerCount != 1) {
+            throw new RuntimeException("Workflow must contain at least one trigger.");
+        }
+
+        if (actionCount == 0) {
+            throw new RuntimeException("Workflow must contain at least one action.");
         }
 
         for (FlowRequestResponse flowRequest : request.getEdges()) {
@@ -128,11 +148,11 @@ public class WorkflowService implements IWorkflow {
             Action sourceAction = updatedActions.stream()
                     .filter(a -> a.getId().equals(flowRequest.getSource()))
                     .findFirst()
-                    .get();
+                    .orElseThrow(() -> new RuntimeException("Source action not found"));
             Action targetAction = updatedActions.stream()
                     .filter(a -> a.getId().equals(flowRequest.getTarget()))
                     .findFirst()
-                    .get();
+                    .orElseThrow(() -> new RuntimeException("Target action not found"));
             flow.setType(flowRequest.getType());
             flow.setSource(sourceAction);
             flow.setTarget(targetAction);

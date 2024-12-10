@@ -24,9 +24,9 @@ const useDragAndDrop = () => {
         toast.error("Workflow already has a trigger");
         return;
       }
-
-      if(!hasTrigger && isAction(dragNode.actionType)) {
-        toast.error("Workflow must have a trigger");
+    
+      if (!hasTrigger && isAction(dragNode.actionType)) {
+        toast.error("Workflow must have a trigger before adding actions");
         return;
       }
 
