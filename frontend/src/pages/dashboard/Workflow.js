@@ -31,21 +31,23 @@ const Flow = () => {
   const { setSelectedNode, setIsOpen, isOpen } = useWorkflow();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [name, setName] = useState("");
   const { onConnect, isValidConnection } = useFlowEdges();
   const [rfInstance, setRfInstance] = useState(null);
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const { hasTrigger, setHasTrigger } = useWorkflow();
+  const { setHasTrigger } = useWorkflow();
 
   const getWorkflow = async () => {
     try {
       const response = await axiosConfig.get(`/api/workflow/${id}`);
       if (response.data) {
-        const { nodes, edges } = response.data;
+        const { nodes, edges, name } = response.data;
 
         setNodes(nodes);
         setEdges(edges);
+        setName(name);
 
         const hasTriggerNode = nodes.some((node) => isTrigger(node.type));
         setHasTrigger(hasTriggerNode);
@@ -54,6 +56,7 @@ const Flow = () => {
       toast.error(error.response?.data?.message || "Failed to load workflow.");
       setNodes([]);
       setEdges([]);
+      setName("");
       setHasTrigger(false);
     }
   };
@@ -122,8 +125,9 @@ const Flow = () => {
       const flow = rfInstance.toObject();
       try {
         const data = {
-          ...flow,
           ...(validate(id) && { id }),
+          ...flow,
+          name,
         };
 
         const response = await axiosConfig.post("/api/workflow/save", data);
@@ -135,7 +139,8 @@ const Flow = () => {
         toast.error(error.response.data.message);
       }
     }
-  }, [rfInstance]);
+  }, [rfInstance, name]);
+
 
   return (
     <div className="flex h-screen">
@@ -168,8 +173,26 @@ const Flow = () => {
           <Controls />
           <MiniMap />
           <Background variant="dots" gap={12} size={1} />
+          <Panel position="top-center">
+            <div className="flex items-center justify-center">
+              <div className="flex items-center">
+                <input
+                  type="text"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="rounded-md bg-transparent p-2 text-center font-semibold text-gray-800 outline-none"
+                />
+              </div>
+            </div>
+          </Panel>
           <Panel position="top-right">
-            <button onClick={onSaveWorkflow}>save</button>
+            <button
+              className="rounded-md bg-teal-500 px-2 py-1 text-white"
+              onClick={onSaveWorkflow}
+            >
+              Save
+            </button>
           </Panel>
         </ReactFlow>
       </div>

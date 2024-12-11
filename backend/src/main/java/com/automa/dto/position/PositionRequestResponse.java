@@ -1,9 +1,13 @@
 package com.automa.dto.position;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class PositionRequestResponse {
-    private float x;
-    private float y;
+    @NotNull(message = "Position cannot be null")
+    private Float x;
+
+    @NotNull(message = "Position cannot be null")
+    private Float y;
 }

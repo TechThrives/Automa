@@ -3,6 +3,7 @@ package com.automa.exception;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +17,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.automa.dto.MessageResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,32 +56,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(messageResponse);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<MessageResponse> handleNotFoundException(NotFoundException ex, WebRequest request) {
-        MessageResponse messageResponse = new MessageResponse("Not Found", Collections.singletonList(ex.getMessage()));
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(messageResponse);
-    }
-
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<MessageResponse> handleBadCredentialException(BadCredentialsException ex,
             WebRequest request) {
-        MessageResponse messageResponse = new MessageResponse("Bad Credentials",
-                Arrays.asList("Invalid Email or Password!!!"));
+        MessageResponse messageResponse = new MessageResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageResponse);
-    }
-
-    @ExceptionHandler(ResourceAlreadyExistsException.class)
-    public ResponseEntity<MessageResponse> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex,
-            WebRequest request) {
-        MessageResponse messageResponse = new MessageResponse("Resource Already Exists",
-                Collections.singletonList(ex.getMessage()));
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(messageResponse);
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex, WebRequest request) {
-        MessageResponse messageResponse = new MessageResponse("An Error Occurred",
-                Collections.singletonList(ex.getMessage()));
+        MessageResponse messageResponse = new MessageResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageResponse);
     }
 
@@ -121,20 +107,23 @@ public class GlobalExceptionHandler {
         MessageResponse messageResponse = new MessageResponse("Invalid Argument Type",
                 Collections.singletonList(ex.getMessage()));
         if (ex.getRequiredType() == UUID.class) {
-            messageResponse.setMessage("Invalid UUID");
+            messageResponse.setMessage("Invalid UUID format");
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageResponse);
     }
-}
 
-class NotFoundException extends RuntimeException {
-    public NotFoundException(String message) {
-        super(message);
-    }
-}
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<MessageResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
+        String errorDetails = "";
 
-class ResourceAlreadyExistsException extends RuntimeException {
-    public ResourceAlreadyExistsException(String message) {
-        super(message);
+        if (ex.getCause() instanceof InvalidFormatException) {
+            InvalidFormatException ifx = (InvalidFormatException) ex.getCause();
+            if (ifx.getTargetType()!=null && ifx.getTargetType().isEnum()) {
+                errorDetails = String.format("Invalid enum value: '%s' for the field: '%s'. The value must be one of: %s.",
+                        ifx.getValue(), ifx.getPath().get(ifx.getPath().size()-1).getFieldName(), Arrays.toString(ifx.getTargetType().getEnumConstants()));
+            }
+        }
+        MessageResponse errorResponse = new MessageResponse(errorDetails);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }

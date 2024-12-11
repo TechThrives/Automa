@@ -27,8 +27,6 @@ import com.automa.entity.Role;
 import com.automa.repository.ApplicationUserRepository;
 import com.automa.services.interfaces.IAuth;
 
-import jakarta.validation.Valid;
-
 @Service
 @Validated
 public class AuthService implements IAuth {
@@ -54,7 +52,7 @@ public class AuthService implements IAuth {
     private String profileImageUrl;
 
     @Override
-    public ResponseEntity<MessageResponse> signUp(@Valid SignUpRequest request) {
+    public ResponseEntity<MessageResponse> signUp(SignUpRequest request) {
         if (request.getPassword().equals(request.getConfirmPassword())) {
             if (!applicationUserRepository.findByUsername(request.getEmail()).isPresent()) {
                 if (!applicationUserRepository.findByPhoneNumber(request.getPhoneNumber()).isPresent()) {
@@ -78,7 +76,7 @@ public class AuthService implements IAuth {
     }
 
     @Override
-    public SignInResponse signIn(@Valid SignInRequest request) {
+    public SignInResponse signIn(SignInRequest request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -94,7 +92,7 @@ public class AuthService implements IAuth {
     }
 
     @Override
-    public ResponseEntity<MessageResponse> forgotPassword(@Valid ForgotPasswordRequest request) {
+    public ResponseEntity<MessageResponse> forgotPassword(ForgotPasswordRequest request) {
         ApplicationUser user = applicationUserRepository.findByUsername(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User Not Found with this Email : " + request.getEmail()));
 
@@ -117,7 +115,7 @@ public class AuthService implements IAuth {
     }
 
     @Override
-    public ResponseEntity<MessageResponse> resetPassword(@Valid ResetPasswordRequest request) {
+    public ResponseEntity<MessageResponse> resetPassword(ResetPasswordRequest request) {
         ApplicationUser user = applicationUserRepository.findByPasswordResetToken(request.getToken())
                 .orElseThrow(() -> new RuntimeException("Invalid or Expired Password Reset Token!!!"));
 

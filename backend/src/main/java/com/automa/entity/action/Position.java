@@ -23,8 +23,8 @@ public class Position {
     private Action action;
 
     @Column(nullable = false)
-    private float x;
+    private Float x;
 
     @Column(nullable = false)
-    private float y;
+    private Float y;
 }

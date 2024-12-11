@@ -23,6 +23,7 @@ import com.automa.entity.flow.Flow;
 import com.automa.repository.WorkflowRepository;
 import com.automa.services.interfaces.IWorkflow;
 import com.automa.utils.ContextUtils;
+import com.automa.utils.WorkflowUtils;
 
 import jakarta.transaction.Transactional;
 
@@ -91,7 +92,7 @@ public class WorkflowService implements IWorkflow {
     public WorkflowRequestResponse saveWorkflow(WorkflowRequestResponse request) {
 
         Workflow workflow = workflowRepository.findById(request.getId()).orElseGet(() -> new Workflow());
-        workflow.setName("Workflow");
+        workflow.setName(request.getName());
         ApplicationUser user = applicationUserService.findByEmail(ContextUtils.getUsername());
         workflow.setUser(user);
 
@@ -130,7 +131,7 @@ public class WorkflowService implements IWorkflow {
                 triggerCount++;
             }
 
-            if(actionInfos.getType() == BaseType.ACTION) {
+            if (actionInfos.getType() == BaseType.ACTION) {
                 actionCount++;
             }
         }
@@ -144,6 +145,9 @@ public class WorkflowService implements IWorkflow {
         }
 
         for (FlowRequestResponse flowRequest : request.getEdges()) {
+            if (!WorkflowUtils.isValidConnection(flowRequest.getSource(), flowRequest.getTarget(), updatedFlows)) {
+                throw new RuntimeException("Workflow must not create a cycle.");
+            }
             Flow flow = flowService.findById(flowRequest.getId());
             Action sourceAction = updatedActions.stream()
                     .filter(a -> a.getId().equals(flowRequest.getSource()))
@@ -201,4 +205,5 @@ public class WorkflowService implements IWorkflow {
 
         return response;
     }
+
 }
