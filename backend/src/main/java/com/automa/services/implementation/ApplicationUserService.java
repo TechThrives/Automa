@@ -24,7 +24,7 @@ public class ApplicationUserService implements IApplicationUser {
     }
 
     @Override
-    public List<ApplicationUserResponse> getAll() {
+    public List<ApplicationUserResponse> findAll() {
         List<ApplicationUser> users = applicationUserRepository.findAll();
 
         return users.stream()

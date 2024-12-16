@@ -36,7 +36,7 @@ public class ApplicationUserController {
 
     @GetMapping("/getAll")
     public ResponseEntity<List<ApplicationUserResponse>> getUsers(HttpServletRequest request) {
-        return new ResponseEntity<>(applicationUserService.getAll(), HttpStatus.OK);
+        return new ResponseEntity<>(applicationUserService.findAll(), HttpStatus.OK);
     }
 
 }

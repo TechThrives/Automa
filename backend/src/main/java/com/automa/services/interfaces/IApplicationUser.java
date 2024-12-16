@@ -7,7 +7,7 @@ import com.automa.dto.applicationuser.ApplicationUserResponse;
 
 public interface IApplicationUser {
     
-    List<ApplicationUserResponse> getAll();
+    List<ApplicationUserResponse> findAll();
     ApplicationUserResponse findByUsername(String username);
     ApplicationUserResponse findById(UUID userId);
 
