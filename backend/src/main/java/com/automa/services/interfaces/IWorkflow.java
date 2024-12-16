@@ -7,7 +7,7 @@ import com.automa.dto.workflow.WorkflowRequestResponse;
 import com.automa.dto.workflow.WorkflowResponse;
 
 public interface IWorkflow {
-    public List<WorkflowResponse> findAll();
-    public WorkflowRequestResponse findById(UUID id);
-    public WorkflowRequestResponse save(WorkflowRequestResponse request);
+    List<WorkflowResponse> findAll();
+    WorkflowRequestResponse findById(UUID id);
+    WorkflowRequestResponse save(WorkflowRequestResponse request);
 }

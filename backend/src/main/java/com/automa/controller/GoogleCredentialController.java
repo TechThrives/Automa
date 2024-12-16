@@ -10,31 +10,29 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.automa.dto.MessageResponse;
-import com.automa.services.interfaces.IGoogle;
+import com.automa.services.interfaces.IGoogleCredential;
 
-import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @Validated
 @RequestMapping("/api/google")
-public class GoogleController {
+public class GoogleCredentialController {
 
-    private final IGoogle googleService;
+    private final IGoogleCredential googleCredentialService;
 
-    public GoogleController(IGoogle googleService) {
-        this.googleService = googleService;
+    public GoogleCredentialController(IGoogleCredential googleCredentialService) {
+        this.googleCredentialService = googleCredentialService;
     }
 
     @GetMapping("/callback")
     public ResponseEntity<MessageResponse> googleCallback(
             @RequestParam(required = false) String code,
-            @RequestParam(required = false) String error,
-            HttpServletRequest request) {
+            @RequestParam(required = false) String error) {
         try {
             if (error != null) {
                 return new ResponseEntity<>(new MessageResponse(error), HttpStatus.BAD_REQUEST);
             } else if (code != null) {
-                MessageResponse messageResponse = googleService.googleCallback(code, request);
+                MessageResponse messageResponse = googleCredentialService.googleCallback(code);
                 return new ResponseEntity<>(messageResponse, HttpStatus.OK);
             }
 

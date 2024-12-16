@@ -9,11 +9,17 @@ import com.automa.entity.action.ActionType;
 
 public interface IActionInfo {
 
-    public List<ActionInfo> getAll();
-    public List<ActionInfo> getTriggers();
-    public List<ActionInfo> getActions();
-    public ActionInfo getByActionType(ActionType actionType);
-    public List<ActionInfo> getByActionGroup(ActionGroup actionGroup);
-    public Map<ActionGroup, List<ActionInfo>> getGroupedActions();
-    public Map<ActionGroup, List<ActionInfo>> getGroupedTriggers();
+    List<ActionInfo> getAll();
+
+    List<ActionInfo> getTriggers();
+
+    List<ActionInfo> getActions();
+
+    ActionInfo getByActionType(ActionType actionType);
+
+    List<ActionInfo> getByActionGroup(ActionGroup actionGroup);
+
+    Map<ActionGroup, List<ActionInfo>> getGroupedActions();
+
+    Map<ActionGroup, List<ActionInfo>> getGroupedTriggers();
 }

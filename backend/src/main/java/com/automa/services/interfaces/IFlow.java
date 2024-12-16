@@ -5,5 +5,5 @@ import java.util.UUID;
 import com.automa.entity.flow.Flow;
 
 public interface IFlow {
-    public Flow findById(UUID id);
+    Flow findById(UUID id);
 }
