@@ -13,10 +13,12 @@ import com.automa.dto.action.ActionRequestResponse;
 import com.automa.dto.flow.FlowRequestResponse;
 import com.automa.dto.position.PositionRequestResponse;
 import com.automa.dto.workflow.WorkflowRequestResponse;
+import com.automa.dto.workflow.WorkflowResponse;
 import com.automa.entity.ApplicationUser;
 import com.automa.entity.Workflow;
 import com.automa.entity.action.Action;
 import com.automa.entity.action.ActionInfo;
+import com.automa.entity.action.ActionType;
 import com.automa.entity.action.BaseType;
 import com.automa.entity.action.Position;
 import com.automa.entity.flow.Flow;
@@ -53,7 +55,7 @@ public class WorkflowService implements IWorkflow {
     }
 
     @Override
-    public WorkflowRequestResponse getWorkflow(UUID id) {
+    public WorkflowRequestResponse findById(UUID id) {
 
         Workflow workflow = workflowRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Workflow not found"));
@@ -88,8 +90,30 @@ public class WorkflowService implements IWorkflow {
     }
 
     @Override
+    public List<WorkflowResponse> findAll() {
+        List<Workflow> workflows = workflowRepository.findAll();
+        
+        return workflows.stream().map(workflow -> {
+            WorkflowResponse response = new WorkflowResponse();
+            BeanUtils.copyProperties(workflow, response);
+            response.setUser(workflow.getUser().getUsername());
+            List<ActionType> nodes = workflow.getActions()
+            .stream().map(action -> action.getType()).collect(Collectors.toList());
+            response.setNodes(nodes);
+            ActionRequestResponse trigger = new ActionRequestResponse();
+            if(workflow.getTrigger() != null) {
+                trigger.setId(workflow.getTrigger().getId());
+                trigger.setType(workflow.getTrigger().getType());
+                trigger.setData(workflow.getTrigger().getData());
+            }
+            response.setTrigger(trigger);
+            return response;
+        }).collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
-    public WorkflowRequestResponse saveWorkflow(WorkflowRequestResponse request) {
+    public WorkflowRequestResponse save(WorkflowRequestResponse request) {
 
         Workflow workflow = workflowRepository.findById(request.getId()).orElseGet(() -> new Workflow());
         workflow.setName(request.getName());
@@ -104,6 +128,8 @@ public class WorkflowService implements IWorkflow {
 
         int triggerCount = 0;
         int actionCount = 0;
+
+        Action trigger = null;
 
         for (ActionRequestResponse actionRequest : request.getNodes()) {
             ActionInfo actionInfos = actionInfoService.getByActionType(actionRequest.getType());
@@ -129,6 +155,7 @@ public class WorkflowService implements IWorkflow {
 
             if (actionInfos.getType() == BaseType.TRIGGER) {
                 triggerCount++;
+                trigger = action;
             }
 
             if (actionInfos.getType() == BaseType.ACTION) {
@@ -137,7 +164,7 @@ public class WorkflowService implements IWorkflow {
         }
 
         if (triggerCount != 1) {
-            throw new RuntimeException("Workflow must contain at least one trigger.");
+            throw new RuntimeException("Workflow must contain exactly one trigger.");
         }
 
         if (actionCount == 0) {
@@ -174,6 +201,7 @@ public class WorkflowService implements IWorkflow {
 
         workflow.setActions(updatedActions);
         workflow.setFlows(updatedFlows);
+        workflow.setTrigger(trigger);
 
         workflow = workflowRepository.save(workflow);
 

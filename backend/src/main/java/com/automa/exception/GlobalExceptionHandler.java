@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex, WebRequest request) {
-        MessageResponse messageResponse = new MessageResponse(ex.getMessage());
+        MessageResponse messageResponse = new MessageResponse(ex.getMessage(), Collections.singletonList(ex.getMessage()));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(messageResponse);
     }
 

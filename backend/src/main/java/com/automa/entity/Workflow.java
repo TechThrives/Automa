@@ -35,7 +35,12 @@ public class Workflow {
     @ToString.Exclude
     private List<Flow> flows = new ArrayList<>();
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "trigger_id", nullable = true)
+    @ToString.Exclude
+    private Action trigger;
+
     @Column(nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive = false;
 }
 

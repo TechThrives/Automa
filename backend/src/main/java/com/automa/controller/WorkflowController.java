@@ -1,5 +1,6 @@
 package com.automa.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.automa.dto.workflow.WorkflowRequestResponse;
+import com.automa.dto.workflow.WorkflowResponse;
 import com.automa.services.interfaces.IWorkflow;
 
 import jakarta.validation.Valid;
@@ -31,13 +33,17 @@ public class WorkflowController {
 
     @GetMapping("/{id}")
     public ResponseEntity<WorkflowRequestResponse> getWorkflow(@Valid @PathVariable UUID id) {
-        return new ResponseEntity<>(workflowService.getWorkflow(id), HttpStatus.OK);
+        return new ResponseEntity<>(workflowService.findById(id), HttpStatus.OK);
     }
     
-
     @PostMapping("/save")
     public ResponseEntity<WorkflowRequestResponse> saveWorkflow(@Valid @RequestBody WorkflowRequestResponse request) {
-        return new ResponseEntity<>(workflowService.saveWorkflow(request), HttpStatus.OK);
+        return new ResponseEntity<>(workflowService.save(request), HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
+        return new ResponseEntity<>(workflowService.findAll(), HttpStatus.OK);
     }
 
 }

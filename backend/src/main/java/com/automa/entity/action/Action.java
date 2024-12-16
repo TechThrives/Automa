@@ -33,6 +33,10 @@ public class Action {
     @OneToOne(mappedBy = "action", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Position position;
 
+    @OneToOne(mappedBy = "trigger", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ToString.Exclude
+    private Workflow triggeredWorkflow;
+
     @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ToString.Exclude
     private List<Flow> outgoingFlows;
