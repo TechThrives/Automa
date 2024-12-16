@@ -14,7 +14,7 @@ public interface ICredential {
 
     List<Credential> findCredentialsByUser(ApplicationUser user);
 
-    Credential createOrUpdateCredential(ApplicationUser user,
+    Credential createOrUpdateCredential(String username,
             CredentialType credentialType,
             HashMap<String, Object> credentialDetails);
 

@@ -17,9 +17,11 @@ import java.util.UUID;
 public class CredentialService implements ICredential {
 
     private final CredentialRepository credentialRepository;
+    private final ApplicationUserService applicationUserService;
 
-    public CredentialService(CredentialRepository credentialRepository) {
+    public CredentialService(CredentialRepository credentialRepository, ApplicationUserService applicationUserService) {
         this.credentialRepository = credentialRepository;
+        this.applicationUserService = applicationUserService;
     }
 
     @Override
@@ -42,8 +44,10 @@ public class CredentialService implements ICredential {
     }
 
     @Override
-    public Credential createOrUpdateCredential(ApplicationUser user, CredentialType credentialType,
+    public Credential createOrUpdateCredential(String username, CredentialType credentialType,
             HashMap<String, Object> credentialDto) {
+
+        ApplicationUser user = applicationUserService.findByEmail(username);
 
         if (credentialRepository.existsByConfigEmailAndCredentialTypeAndNotUser(credentialDto.get("email").toString(),
                 credentialType.name(), user.getId())) {
