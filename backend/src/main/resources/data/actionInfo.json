@@ -4,7 +4,6 @@
     "description": "An action to send an email to the specified recipients.",
     "type": "ACTION",
     "actionType": "SENDMAIL",
-    "actionGroup": "GMAIL",
     "scope": "https://mail.google.com",
     "data": {
       "to": "",
@@ -17,18 +16,31 @@
     }
   },
   {
-    "name": "Schedule Time",
+    "name": "Run Once",
     "description": "Trigger an action at a specific time.",
     "type": "TRIGGER",
-    "actionType": "TIME",
-    "actionGroup": "SCHEDULER",
+    "actionType": "RUNONCE",
     "scope": "None",
     "data": {
       "dateTime": ""
     },
     "output": {
       "status": "",
-      "triggeredAt": ""
+      "runAt": ""
+    }
+  },
+  {
+    "name": "Run Daily",
+    "description": "Trigger an action at a specific time of the day.",
+    "type": "TRIGGER",
+    "actionType": "RUNDAILY",
+    "scope": "None",
+    "data": {
+      "time": ""
+    },
+    "output": {
+      "status": "",
+      "runAt": ""
     }
   }
 ]

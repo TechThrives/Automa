@@ -8,14 +8,13 @@ import java.util.regex.Pattern;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.automa.entity.action.ActionInfo;
 import com.automa.repository.ActionInfoRepository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import jakarta.transaction.Transactional;
 
 @Component
 public class DataSeeder implements CommandLineRunner {
@@ -36,9 +35,11 @@ public class DataSeeder implements CommandLineRunner {
     @Transactional
     public boolean seedActionInfo() {
         ObjectMapper mapper = new ObjectMapper();
-        TypeReference<List<ActionInfo>> typeReference = new TypeReference<List<ActionInfo>>() {};
+        TypeReference<List<ActionInfo>> typeReference = new TypeReference<List<ActionInfo>>() {
+        };
+
         InputStream inputStream = TypeReference.class.getResourceAsStream("/data/actionInfo.json");
-        
+
         if (inputStream == null) {
             System.out.println("Error: Could not find actionInfo.json file.");
             return false;
@@ -47,6 +48,9 @@ public class DataSeeder implements CommandLineRunner {
         try {
             List<ActionInfo> actionInfos = mapper.readValue(inputStream, typeReference);
             for (ActionInfo actionInfo : actionInfos) {
+
+                actionInfo.setActionGroup(actionInfo.getActionType().getActionGroup());
+
                 try {
                     actionInfoRepository.save(actionInfo);
                 } catch (Exception e) {
