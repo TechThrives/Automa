@@ -49,8 +49,11 @@ public class GoogleCredentialService implements IGoogleCredential {
             if (existingCredential != null) {
                 GoogleTokenResponse tokenResponse = googleConfig.exchangeCodeForToken(code);
                 String email = tokenResponse.parseIdToken().getPayload().getEmail();
+                String fullName = tokenResponse.parseIdToken().getPayload().get("name").toString();
+                String picture = tokenResponse.parseIdToken().getPayload().get("picture").toString();
 
                 if (!email.equalsIgnoreCase(existingCredential.getGoogleEmail())) {
+                    googleConfig.revokeToken(tokenResponse.getRefreshToken());
                     return new MessageResponse("Please use " + existingCredential.getGoogleEmail() + " to login.");
                 }
 
@@ -61,9 +64,8 @@ public class GoogleCredentialService implements IGoogleCredential {
                 existingCredential.setAccessToken(tokenResponse.getAccessToken());
                 existingCredential.setScopes(Arrays.asList(tokenResponse.getScope().split(" ")));
                 existingCredential.setExpiresInSeconds(tokenResponse.getExpiresInSeconds());
-                existingCredential.setFullName(tokenResponse.parseIdToken().getPayload().get("name").toString());
-                existingCredential
-                        .setProfileImageUrl(tokenResponse.parseIdToken().getPayload().get("picture").toString());
+                existingCredential.setFullName(fullName);
+                existingCredential.setProfileImageUrl(picture);
 
                 googleCredentialRepository.save(existingCredential);
 
@@ -76,15 +78,13 @@ public class GoogleCredentialService implements IGoogleCredential {
                 String picture = tokenResponse.parseIdToken().getPayload().get("picture").toString();
 
                 if (email == null || fullName == null || picture == null) {
+                    googleConfig.revokeToken(tokenResponse.getRefreshToken());
                     return new MessageResponse("Add userinfo scope to your Google API");
                 }
 
                 if (googleCredentialRepository.existsByGoogleEmail(email)) {
-                    return new MessageResponse("The Google email is already associated with another Automa account.");
-                }
-
-                if (tokenResponse.getRefreshToken() == null) {
-                    return new MessageResponse("Connection Error");
+                    googleConfig.revokeToken(tokenResponse.getRefreshToken());
+                    return new MessageResponse("The Google Acount is already connected.");
                 }
 
                 GoogleCredential newCredential = new GoogleCredential();
@@ -129,6 +129,7 @@ public class GoogleCredentialService implements IGoogleCredential {
             GoogleCredential googleCredential = googleCredentialRepository.findByRefreshToken(refreshToken);
             GoogleTokenResponse tokenResponse = googleConfig.refreshToken(refreshToken);
             googleCredential.setAccessToken(tokenResponse.getAccessToken());
+            googleCredential.setScopes(Arrays.asList(tokenResponse.getScope().split(" ")));
             return googleCredentialRepository.save(googleCredential);
         } catch (IOException e) {
             if (e instanceof HttpResponseException httpResponseException &&
