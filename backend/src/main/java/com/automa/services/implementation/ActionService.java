@@ -21,11 +21,17 @@ public class ActionService implements IAction {
 
     @Override
     public Action findById(UUID id) {
-        return actionRepository.findById(id).orElseGet(() -> new Action());
+        return actionRepository.findById(id).orElseGet(() -> {
+            Action action = new Action();
+            action.setId(id);
+            return action;
+        });
     }
 
     public void delete(UUID id) {
-        actionRepository.deleteById(id);
+        if (actionRepository.existsById(id)) {
+            actionRepository.deleteById(id);
+        }
     }
 
 }

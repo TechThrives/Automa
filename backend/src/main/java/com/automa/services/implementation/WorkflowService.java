@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import com.automa.dto.action.ActionRequestResponse;
@@ -26,8 +27,6 @@ import com.automa.repository.WorkflowRepository;
 import com.automa.services.interfaces.IWorkflow;
 import com.automa.utils.ContextUtils;
 import com.automa.utils.WorkflowUtils;
-
-import jakarta.transaction.Transactional;
 
 @Service
 @Validated
@@ -142,7 +141,8 @@ public class WorkflowService implements IWorkflow {
             }
 
             Action action = actionService.findById(actionRequest.getId());
-            BeanUtils.copyProperties(actionRequest, action);
+            action.setType(actionRequest.getType());
+            action.setData(actionRequest.getData());
             action.setOutput(actionInfos.getOutput());
             action.setWorkflow(workflow);
 
@@ -175,6 +175,7 @@ public class WorkflowService implements IWorkflow {
             if (!WorkflowUtils.isValidConnection(flowRequest.getSource(), flowRequest.getTarget(), updatedFlows)) {
                 throw new RuntimeException("Workflow must not create a cycle.");
             }
+
             Flow flow = flowService.findById(flowRequest.getId());
             Action sourceAction = updatedActions.stream()
                     .filter(a -> a.getId().equals(flowRequest.getSource()))

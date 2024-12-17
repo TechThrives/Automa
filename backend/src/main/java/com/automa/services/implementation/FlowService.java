@@ -21,12 +21,17 @@ public class FlowService implements IFlow {
 
     @Override
     public Flow findById(UUID id) {
-        return flowRepository.findById(id).orElseGet(() -> new Flow());
+        return flowRepository.findById(id).orElseGet(() -> {
+            Flow flow = new Flow();
+            flow.setId(id);
+            return flow;
+        });
     }
 
     public void delete(UUID id) {
-        System.out.println("Deleting flow: " + id);
-        flowRepository.deleteById(id);
+        if(flowRepository.existsById(id)) {
+            flowRepository.deleteById(id);
+        }
     }
 
 }
