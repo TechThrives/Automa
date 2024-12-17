@@ -1,27 +1,37 @@
 import NodeWithLogo from "./design/NodeWithLogo";
-import IconMapping from "../constants/IconMapping";
-import { isTrigger } from "../constants/ActionUtils";
+import { isTrigger, Triggers, Actions, getIcon } from "../constants/ActionUtils";;
 
 const nodeTypes = {
-  TIME: (props) => (
+  [Triggers.RUNONCE]: (props) => (
     <NodeWithLogo
       {...props}
       nodeInfo={{
-        icon: IconMapping[props.type],
-        text: "Schedule Time",
+        icon: getIcon(props.type),
+        text: "Run Once",
         iconColor: "text-gray-500",
         isTrigger: isTrigger(props.type),
       }}
     />
   ),
-  SENDMAIL: (props) => (
+  [Triggers.RUNDAILY]: (props) => (
     <NodeWithLogo
       {...props}
       nodeInfo={{
-        icon: IconMapping[props.type],
+        icon: getIcon(props.type),
+        text: "Run Daily",
+        iconColor: "text-gray-500",
+        isTrigger: isTrigger(props.type),
+      }}
+    />
+  ),
+  [Actions.SENDMAIL]: (props) => (
+    <NodeWithLogo
+      {...props}
+      nodeInfo={{
+        icon: getIcon(props.type),
         text: "Send Mail Node",
         iconColor: "text-green-500",
-        isTrigger: isTrigger(props.type),
+        isTrigger: false, // Directly mark this as not a trigger
       }}
     />
   ),

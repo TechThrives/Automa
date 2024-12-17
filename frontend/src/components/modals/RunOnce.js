@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useWorkflow } from "../../context/WorkflowContext";
 import { useReactFlow } from "@xyflow/react";
 
-const Time = () => {
+const RunOnce = () => {
   const { setNodes } = useReactFlow();
   const { selectedNode: node, setIsOpen } = useWorkflow();
   const [dateTime, setDateTime] = useState(node.data.dateTime);
@@ -25,7 +25,7 @@ const Time = () => {
   return (
     <form onSubmit={handleSubmit} className="p-4">
       <h2 className="text-lg font-semibold text-gray-900 mb-3">
-        Schedule Time
+        Run Once
       </h2>
       <div className="mb-3">
         <label
@@ -64,4 +64,4 @@ const Time = () => {
   );
 };
 
-export default Time;
+export default RunOnce;

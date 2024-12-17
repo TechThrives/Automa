@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Time from "./Time";
+import RunOnce from "./RunOnce";
 import { useWorkflow } from "../../context/WorkflowContext";
 import { IoCloseSharp } from "react-icons/io5";
 import SendMail from "./SendMail";
 import useNodes from "../../hooks/useNodes";
+import { Actions, Triggers } from "../../constants/ActionUtils";
+import RunDaily from "./RunDaily";
 
 const Modal = () => {
   const { selectedNode, setIsOpen, setSelectedNode } = useWorkflow();
@@ -31,8 +33,9 @@ const Modal = () => {
       </p>
       <div className="bg-white rounded-lg shadow-xl w-full max-w-sm">
         <IoCloseSharp className="mt-4 mr-4 float-right" onClick={handleClose} />
-        {selectedNode.type === "TIME" && <Time />}
-        {selectedNode.type === "SENDMAIL" && <SendMail />}
+        {selectedNode.type === Triggers.RUNONCE && <RunOnce />}
+        {selectedNode.type === Triggers.RUNDAILY && <RunDaily />}
+        {selectedNode.type === Actions.SENDMAIL && <SendMail />}
       </div>
     </div>
   );

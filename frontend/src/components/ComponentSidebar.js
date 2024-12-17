@@ -3,7 +3,7 @@ import { useWorkflow } from "../context/WorkflowContext";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import axiosConfig from "../utils/axiosConfig";
 import { toast } from "react-hot-toast";
-import IconMapping from "../constants/IconMapping";
+import { getIcon } from "../constants/ActionUtils";
 
 const ComponentSidebar = () => {
   const [openGroups, setOpenGroups] = useState({});
@@ -72,7 +72,7 @@ const ComponentSidebar = () => {
             {openGroups[group] && (
               <div className="grid grid-cols-2 gap-2 overflow-hidden p-2 transition-all duration-200">
                 {items.map((component, idx) => {
-                  const IconComponent = IconMapping[component.actionType];
+                  const IconComponent = getIcon(component.actionType);
                   return (
                     <div
                       key={idx}
@@ -113,7 +113,7 @@ const ComponentSidebar = () => {
             {openGroups[group] && (
               <div className="grid grid-cols-2 gap-2 overflow-hidden p-2 transition-all duration-200">
                 {items.map((component, idx) => {
-                  const IconComponent = IconMapping[component.actionType];
+                  const IconComponent = getIcon(component.actionType);
                   return (
                     <div
                       key={idx}
