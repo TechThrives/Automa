@@ -91,16 +91,16 @@ public class WorkflowService implements IWorkflow {
     @Override
     public List<WorkflowResponse> findAll() {
         List<Workflow> workflows = workflowRepository.findAll();
-        
+
         return workflows.stream().map(workflow -> {
             WorkflowResponse response = new WorkflowResponse();
             BeanUtils.copyProperties(workflow, response);
             response.setUser(workflow.getUser().getUsername());
             List<ActionType> nodes = workflow.getActions()
-            .stream().map(action -> action.getType()).collect(Collectors.toList());
+                    .stream().map(action -> action.getType()).collect(Collectors.toList());
             response.setNodes(nodes);
             ActionRequestResponse trigger = new ActionRequestResponse();
-            if(workflow.getTrigger() != null) {
+            if (workflow.getTrigger() != null) {
                 trigger.setId(workflow.getTrigger().getId());
                 trigger.setType(workflow.getTrigger().getType());
                 trigger.setData(workflow.getTrigger().getData());
@@ -118,9 +118,28 @@ public class WorkflowService implements IWorkflow {
         workflow.setName(request.getName());
         ApplicationUser user = applicationUserService.findByEmail(ContextUtils.getUsername());
         workflow.setUser(user);
+        workflow = workflowRepository.save(workflow);
 
-        List<Action> existingActions = new ArrayList<>(workflow.getActions());
-        List<Flow> existingFlows = new ArrayList<>(workflow.getFlows());
+        List<Flow> oldFlows = workflow.getFlows().stream()
+                .filter(flow -> request.getEdges().stream().noneMatch(edge -> edge.getId().equals(flow.getId())))
+                .toList();
+
+        for (Flow flow : oldFlows) {
+            workflow.getFlows().remove(flow);
+            flowService.delete(flow.getId());
+        }
+
+        List<Action> oldAction = workflow.getActions().stream()
+                .filter(action -> request.getNodes().stream().noneMatch(node -> node.getId().equals(action.getId())))
+                .toList();
+
+        for (Action action : oldAction) {
+            workflow.getActions().remove(action);
+            if (workflow.getTrigger() != null && workflow.getTrigger().getId().equals(action.getId())) {
+                workflow.setTrigger(null);
+            }
+            actionService.delete(action.getId());
+        }
 
         List<Action> updatedActions = new ArrayList<>();
         List<Flow> updatedFlows = new ArrayList<>();
@@ -128,7 +147,7 @@ public class WorkflowService implements IWorkflow {
         int triggerCount = 0;
         int actionCount = 0;
 
-        Action trigger = null;
+        Action trigger = workflow.getTrigger();
 
         for (ActionRequestResponse actionRequest : request.getNodes()) {
             ActionInfo actionInfos = actionInfoService.getByActionType(actionRequest.getType());
@@ -144,13 +163,12 @@ public class WorkflowService implements IWorkflow {
             action.setType(actionRequest.getType());
             action.setData(actionRequest.getData());
             action.setOutput(actionInfos.getOutput());
-            action.setWorkflow(workflow);
 
             Position position = positionService.findByActionId(action.getId());
             BeanUtils.copyProperties(actionRequest.getPosition(), position);
             position.setAction(action);
             action.setPosition(position);
-
+            action.setWorkflow(workflow);
             updatedActions.add(action);
 
             if (actionInfos.getType() == BaseType.TRIGGER) {
@@ -192,16 +210,8 @@ public class WorkflowService implements IWorkflow {
             updatedFlows.add(flow);
         }
 
-        existingActions.stream()
-                .filter(action -> !updatedActions.contains(action))
-                .forEach(action -> actionService.delete(action.getId()));
-
-        existingFlows.stream()
-                .filter(flow -> !updatedFlows.contains(flow))
-                .forEach(flow -> flowService.delete(flow.getId()));
-
-        workflow.setActions(updatedActions);
         workflow.setFlows(updatedFlows);
+        workflow.setActions(updatedActions);
         workflow.setTrigger(trigger);
 
         workflow = workflowRepository.save(workflow);

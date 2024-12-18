@@ -24,6 +24,11 @@ public class Flow {
     private FlowType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "workflow_id", nullable = false)
+    @ToString.Exclude
+    private Workflow workflow;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_action_id", nullable = false)
     @ToString.Exclude
     private Action source;
@@ -32,9 +37,4 @@ public class Flow {
     @JoinColumn(name = "target_action_id", nullable = false)
     @ToString.Exclude
     private Action target;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workflow_id", nullable = false)
-    @ToString.Exclude
-    private Workflow workflow;
 }

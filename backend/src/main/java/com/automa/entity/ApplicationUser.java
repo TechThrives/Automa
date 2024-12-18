@@ -58,7 +58,7 @@ public class ApplicationUser implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)  // One user can have many payments
     private List<Payment> payments;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
     private GoogleCredential googleCredential;
 
     @Column(nullable = false)

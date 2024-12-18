@@ -22,11 +22,11 @@
     "actionType": "RUNONCE",
     "scope": "None",
     "data": {
-      "dateTime": ""
+      "dateTime": "",
+      "active": true
     },
     "output": {
-      "status": "",
-      "runAt": ""
+      "status": ""
     }
   },
   {
@@ -36,11 +36,11 @@
     "actionType": "RUNDAILY",
     "scope": "None",
     "data": {
-      "time": ""
+      "time": "",
+      "active": true
     },
     "output": {
-      "status": "",
-      "runAt": ""
+      "status": ""
     }
   }
 ]

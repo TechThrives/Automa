@@ -37,7 +37,7 @@ public class Action {
     @ToString.Exclude
     private Workflow triggeredWorkflow;
 
-    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Exclude
     private List<Flow> outgoingFlows;
 
