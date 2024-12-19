@@ -1,7 +1,15 @@
 package com.automa.utils;
 
+import com.automa.entity.action.ActionGroup;
+import com.automa.entity.action.ActionType;
 import com.automa.entity.flow.Flow;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class WorkflowUtils {
@@ -59,5 +67,53 @@ public class WorkflowUtils {
     public static boolean isValidConnection(UUID source, UUID target, List<Flow> existingFlows) {
         Map<UUID, Set<UUID>> graph = buildGraph(existingFlows);
         return !hasCycle(graph, source, target);
+    }
+
+    public static List<ActionType> findActionTypesBySchedule() {
+        List<ActionType> actionTypes = new ArrayList<>();
+        for (ActionType action : ActionType.values()) {
+            if (ActionGroup.SCHEDULER.equals(action.getActionGroup())) {
+                actionTypes.add(action);
+            }
+        }
+        return actionTypes;
+    }
+
+    public static boolean runNow(HashMap<String, Object> data, ActionType actionType) {
+        switch (actionType) {
+            case RUNONCE:
+                try {
+                    if ((Boolean) data.get("active") == true) {
+                        String dateTimeString = (String) data.get("dateTime");
+                        LocalDateTime inputDateTime = LocalDateTime.parse(dateTimeString,
+                                DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                        LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.systemDefault());
+                        if (Math.abs(ChronoUnit.MINUTES.between(currentDateTime, inputDateTime)) == 0) {
+                            return true;
+                        }
+                    }
+
+                } catch (DateTimeParseException e) {
+                    return false;
+                }
+
+            case RUNDAILY:
+                try {
+                    if ((Boolean) data.get("active") == true) {
+                        String timeString = (String) data.get("time");
+                        LocalTime inputTime = LocalTime.parse(timeString);
+                        LocalTime currentTime = LocalTime.now(ZoneId.systemDefault());
+                        if (Math.abs(ChronoUnit.MINUTES.between(currentTime, inputTime)) == 0) {
+                            return true;
+                        }
+                    }
+                } catch (DateTimeParseException e) {
+                    return false;
+                }
+            default:
+                break;
+        }
+        return false;
+
     }
 }

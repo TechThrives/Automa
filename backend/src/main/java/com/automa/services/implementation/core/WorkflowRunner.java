@@ -2,6 +2,7 @@ package com.automa.services.implementation.core;
 
 import java.util.*;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.automa.entity.ApplicationUser;
@@ -12,6 +13,7 @@ import com.automa.repository.WorkflowRepository;
 import com.automa.services.implementation.core.mail.GoogleMail;
 import com.automa.services.implementation.core.schedule.Time;
 import com.automa.utils.ServiceContext;
+import com.automa.utils.WorkflowUtils;
 
 @Service
 public class WorkflowRunner {
@@ -26,7 +28,22 @@ public class WorkflowRunner {
         this.googleMail = googleMail;
     }
 
+    private final List<Workflow> workflows = new ArrayList<>();
     private final Set<String> visitedFlows = new HashSet<>();
+
+    @Scheduled(fixedDelay = 8000)
+    public void runScheduledWorkflow() {
+        workflows.clear();
+        WorkflowUtils.findActionTypesBySchedule().forEach(actionType -> {
+            System.out.println("Finding workflows for trigger type: " + actionType);
+            workflowRepository.findByTrigger_Type(actionType).forEach(workflow -> {
+                if (WorkflowUtils.runNow(workflow.getTrigger().getData(), actionType))
+                    workflows.add(workflow);
+            });
+        });
+
+        workflows.forEach(this::runWorkflow);
+    }
 
     public void runWorkflow(Workflow workflow) {
         ApplicationUser user = workflow.getUser();
