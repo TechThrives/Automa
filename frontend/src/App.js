@@ -11,6 +11,7 @@ import GoogleCallback from "./pages/dashboard/GoogleCallback";
 import { AppProvider } from "./context/AppContext";
 import PrivateRoute from "./utils/PrivateRoute";
 import ToastContainer from "./components/ToastContainer";
+import WorkflowOverview from "./pages/dashboard/WorkflowOverview";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route index element={<Home />} />
               <Route path="profile" element={<Profile />} />
               <Route path="connect" element={<ConnectAuth />} />
+              <Route path="overview" element={<WorkflowOverview />} />
             </Route>
             <Route path="/dashboard/workflow/:id" element={<Workflow />} />
             <Route path="/dashboard/workflow" element={<Workflow />} />

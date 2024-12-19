@@ -3,7 +3,7 @@ import { useWorkflow } from "../context/WorkflowContext";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 import axiosConfig from "../utils/axiosConfig";
 import { toast } from "react-hot-toast";
-import { getIcon } from "../constants/ActionUtils";
+import { ActionIcon } from "../constants/ActionUtils";
 
 const ComponentSidebar = () => {
   const [openGroups, setOpenGroups] = useState({});
@@ -72,7 +72,6 @@ const ComponentSidebar = () => {
             {openGroups[group] && (
               <div className="grid grid-cols-2 gap-2 overflow-hidden p-2 transition-all duration-200">
                 {items.map((component, idx) => {
-                  const IconComponent = getIcon(component.actionType);
                   return (
                     <div
                       key={idx}
@@ -82,7 +81,7 @@ const ComponentSidebar = () => {
                       onDragStart={(event) => onDragStart(event, component)}
                       draggable={!hasTrigger}
                     >
-                      <IconComponent className="h-6 w-6" aria-hidden="true" />
+                      <ActionIcon actionType={component.actionType} />
                       <span className="text-center text-xs">
                         {component.name}
                       </span>
@@ -113,7 +112,6 @@ const ComponentSidebar = () => {
             {openGroups[group] && (
               <div className="grid grid-cols-2 gap-2 overflow-hidden p-2 transition-all duration-200">
                 {items.map((component, idx) => {
-                  const IconComponent = getIcon(component.actionType);
                   return (
                     <div
                       key={idx}
@@ -123,7 +121,7 @@ const ComponentSidebar = () => {
                       onDragStart={(event) => onDragStart(event, component)}
                       draggable={hasTrigger}
                     >
-                      <IconComponent className="h-6 w-6" aria-hidden="true" />
+                      <ActionIcon actionType={component.actionType} />
                       <span className="text-center text-xs">
                         {component.name}
                       </span>

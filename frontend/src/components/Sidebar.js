@@ -3,7 +3,6 @@ import { FiLink, FiPieChart, FiPlus } from "react-icons/fi";
 import {
   FiMenu,
   FiHome,
-  FiBarChart,
   FiSettings,
   FiChevronDown,
   FiChevronUp,
@@ -36,8 +35,8 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
       name: "Workflow",
       icon: GoWorkflow,
       subItems: [
-        { name: "Overview", href: "workflow", icon: FiPieChart },
-        { name: "Create New", href: "workflow/reports", icon: FiPlus },
+        { name: "Overview", href: "overview", icon: FiPieChart },
+        { name: "Create New", href: "workflow", icon: FiPlus },
       ],
     },
     {
