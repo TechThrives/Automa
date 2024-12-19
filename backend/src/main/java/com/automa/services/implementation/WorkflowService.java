@@ -96,9 +96,9 @@ public class WorkflowService implements IWorkflow {
             WorkflowResponse response = new WorkflowResponse();
             BeanUtils.copyProperties(workflow, response);
             response.setUser(workflow.getUser().getUsername());
-            List<ActionType> nodes = workflow.getActions()
+            List<ActionType> actions = workflow.getActions()
                     .stream().map(action -> action.getType()).collect(Collectors.toList());
-            response.setNodes(nodes);
+            response.setActions(actions);
             ActionRequestResponse trigger = new ActionRequestResponse();
             if (workflow.getTrigger() != null) {
                 trigger.setId(workflow.getTrigger().getId());
@@ -243,6 +243,28 @@ public class WorkflowService implements IWorkflow {
         response.setEdges(edges);
 
         return response;
+    }
+
+    @Override
+    public List<WorkflowResponse> findByUser() {
+        List<Workflow> workflows = workflowRepository.findByUser_Email(ContextUtils.getUsername());
+
+        return workflows.stream().map(workflow -> {
+            WorkflowResponse response = new WorkflowResponse();
+            BeanUtils.copyProperties(workflow, response);
+            response.setUser(workflow.getUser().getUsername());
+            List<ActionType> actions = workflow.getActions()
+                    .stream().map(action -> action.getType()).collect(Collectors.toList());
+            response.setActions(actions);
+            ActionRequestResponse trigger = new ActionRequestResponse();
+            if (workflow.getTrigger() != null) {
+                trigger.setId(workflow.getTrigger().getId());
+                trigger.setType(workflow.getTrigger().getType());
+                trigger.setData(workflow.getTrigger().getData());
+            }
+            response.setTrigger(trigger);
+            return response;
+        }).collect(Collectors.toList());
     }
 
 }

@@ -12,6 +12,6 @@ import java.util.List;
 
 @Repository
 public interface WorkflowRepository extends JpaRepository<Workflow, UUID> {
-    List<Workflow> findByUser_Id(UUID id);
+    List<Workflow> findByUser_Email(String email);
     List<Workflow> findByTrigger_Type(ActionType actionType);
 }

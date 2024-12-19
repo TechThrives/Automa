@@ -8,6 +8,10 @@ import com.automa.dto.workflow.WorkflowResponse;
 
 public interface IWorkflow {
     List<WorkflowResponse> findAll();
+
     WorkflowRequestResponse findById(UUID id);
+
     WorkflowRequestResponse save(WorkflowRequestResponse request);
+
+    List<WorkflowResponse> findByUser();
 }

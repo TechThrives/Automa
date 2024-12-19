@@ -12,7 +12,7 @@ import lombok.Data;
 public class WorkflowResponse {
     private UUID id;
     private String name;
-    private List<ActionType> nodes;
+    private List<ActionType> actions;
     private ActionRequestResponse trigger;
     private Boolean isActive;
     private String user;

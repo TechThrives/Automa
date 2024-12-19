@@ -41,6 +41,12 @@ public class WorkflowController {
         return new ResponseEntity<>(workflowService.save(request), HttpStatus.OK);
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<List<WorkflowResponse>> getUserWorkflow() {
+        return new ResponseEntity<>(workflowService.findByUser(), HttpStatus.OK);
+    }
+    
+
     @GetMapping("/all")
     public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
         return new ResponseEntity<>(workflowService.findAll(), HttpStatus.OK);
