@@ -1,15 +1,12 @@
-package com.automa.services.implementation.action;
+package com.automa.services.implementation.core.youtube;
 
 import java.util.HashMap;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.client.RestClient;
 
-import com.automa.services.ApiHelperService;
-import com.automa.utils.ServiceContext;
+import com.automa.services.implementation.core.ApiHelperService;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -17,20 +14,17 @@ import com.google.gson.JsonParser;
 @Validated
 public class Youtube {
 
-    private ApiHelperService apiHelperService = new ApiHelperService();
+    private ApiHelperService apiHelperService;
+
+    public Youtube(ApiHelperService apiHelperService) {
+        this.apiHelperService = apiHelperService;
+    }
 
     public HashMap<String, String> getYouTubeVideoInfo(String videoId) {
         try {
-            ServiceContext.setGoogleAccessToken("");
-            RestClient restClient = apiHelperService.buildClient();
             String apiUrl = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=" + videoId;
 
-            String responseBody = restClient
-                    .method(HttpMethod.GET)
-                    .uri(apiUrl)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + ServiceContext.getGoogleAccessToken())
-                    .retrieve()
-                    .body(String.class);
+            String responseBody = apiHelperService.executeWithAccessToken(apiUrl, HttpMethod.GET, null);
 
             JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
 
@@ -53,8 +47,6 @@ public class Youtube {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
-        } finally {
-            ServiceContext.removeGoogleAccessToken();
         }
 
     }

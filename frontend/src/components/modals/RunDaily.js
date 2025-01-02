@@ -14,7 +14,7 @@ const RunDaily = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newNode = { ...node, data: { ...node.data, time } };
+    const newNode = { ...node, data: { ...node.data, time, active: true } };
     setNodes((nds) => nds.concat(newNode));
     setIsOpen(false);
   };

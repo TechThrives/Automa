@@ -24,4 +24,6 @@ public class ActionRequestResponse {
 
     @NotNull(message = "Data cannot be null")
     private HashMap<String, Object> data;
+
+    private HashMap<String, Object> output;
 }

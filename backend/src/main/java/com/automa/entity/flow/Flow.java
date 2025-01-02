@@ -19,14 +19,14 @@ public class Flow {
     @Column(nullable = false, updatable = false, unique = true)
     private UUID id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private FlowType type;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_id", nullable = false)
     @ToString.Exclude
     private Workflow workflow;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private FlowType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_action_id", nullable = false)

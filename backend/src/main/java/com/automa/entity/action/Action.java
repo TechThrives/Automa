@@ -30,8 +30,11 @@ public class Action {
     @Column(nullable = false)
     private ActionType type;
 
-    @OneToOne(mappedBy = "action", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Position position;
+    @Column(nullable = false)
+    private Float positionX;
+
+    @Column(nullable = false)
+    private Float positionY;
 
     @OneToOne(mappedBy = "trigger", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @ToString.Exclude

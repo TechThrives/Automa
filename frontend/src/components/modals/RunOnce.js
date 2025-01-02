@@ -17,7 +17,7 @@ const RunOnce = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isValid) {
-      const newNode = { ...node, data: {...node.data, dateTime } };
+      const newNode = { ...node, data: {...node.data, dateTime, active: true } };
       setNodes((nds) => nds.concat(newNode));
       setIsOpen(false);
     }

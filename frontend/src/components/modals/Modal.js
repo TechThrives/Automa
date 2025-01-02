@@ -16,7 +16,7 @@ const Modal = () => {
     if (selectedNode) {
       const previousNodes = getPreviousConnectedNodes(selectedNode.id);
       const previousNodeData = previousNodes.reduce((acc, node) => {
-        return { ...acc, [node.name]: node.output };
+        return { ...acc, ...node.output };
       }, {});
       setPreviousNodesData(previousNodeData);
     }

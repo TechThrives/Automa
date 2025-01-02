@@ -44,7 +44,7 @@ public class ActionInfoService implements IActionInfo {
         ActionInfo actionInfo = actionInfoRepository.findByActionType(actionType);
         if (actionInfo == null)
             throw new RuntimeException("Action type not found");
-        return actionInfoRepository.findByActionType(actionType);
+        return actionInfo;
     }
 
     @Override

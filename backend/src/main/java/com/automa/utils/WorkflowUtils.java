@@ -8,9 +8,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WorkflowUtils {
 
@@ -79,6 +80,34 @@ public class WorkflowUtils {
         return actionTypes;
     }
 
+    public static HashMap<String, Object> replaceVariableWithData(HashMap<String, Object> data,
+            HashMap<String, Object> previousOutput) {
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (value instanceof String) {
+                String stringValue = (String) value;
+                // Pattern to match all {{variableName}} within the string
+                String regex = "\\{\\{(.*?)\\}\\}";
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(stringValue);
+                StringBuffer result = new StringBuffer();
+
+                while (matcher.find()) {
+                    String variableName = matcher.group(1);
+                    Object variableValue = previousOutput.get(variableName);
+                    if (variableValue != null) {
+                        matcher.appendReplacement(result, variableValue.toString());
+                    }
+                }
+                matcher.appendTail(result);
+
+                data.put(key, result.toString());
+            }
+        }
+        return data;
+    }
+
     public static boolean runNow(HashMap<String, Object> data, ActionType actionType) {
         switch (actionType) {
             case RUNONCE:
@@ -93,9 +122,10 @@ public class WorkflowUtils {
                         }
                     }
 
-                } catch (DateTimeParseException e) {
-                    return false;
+                } catch (Exception e) {
+                    System.out.println("Error parsing date time: " + e.getMessage());
                 }
+                return false;
 
             case RUNDAILY:
                 try {
@@ -107,9 +137,11 @@ public class WorkflowUtils {
                             return true;
                         }
                     }
-                } catch (DateTimeParseException e) {
-                    return false;
+                } catch (Exception e) {
+                    System.out.println("Error parsing time: " + e.getMessage());
                 }
+                return false;
+                
             default:
                 break;
         }

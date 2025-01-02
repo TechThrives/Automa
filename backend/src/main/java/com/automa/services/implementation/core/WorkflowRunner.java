@@ -42,6 +42,8 @@ public class WorkflowRunner {
             });
         });
 
+        System.out.println("Found " + workflows.size() + " workflows to run.");
+
         workflows.forEach(this::runWorkflow);
     }
 
@@ -57,23 +59,19 @@ public class WorkflowRunner {
                 executeNextActions(trigger, new HashMap<>());
             }
             ServiceContext.clearContext();
+            workflowRepository.save(workflow);
+
         } else {
             System.out.println("Google credentials not found for user: " + user.getEmail());
         }
-
-        workflowRepository.save(workflow);
     }
 
-    private void executeNextActions(Action currentAction, Map<String, Object> previousOutput) {
+    private void executeNextActions(Action currentAction, HashMap<String, Object> previousOutput) {
         if (currentAction == null) {
             return;
         }
 
-        HashMap<String, Object> combinedData = new HashMap<>(currentAction.getData());
-        combinedData.putAll(previousOutput);
-        currentAction.setData(combinedData);
-
-        Map<String, Object> currentOutput = runAction(currentAction);
+        HashMap<String, Object> currentOutput = runAction(currentAction, previousOutput);
 
         currentAction.getOutgoingFlows().forEach(flow -> {
             Action nextAction = flow.getTarget();
@@ -87,21 +85,21 @@ public class WorkflowRunner {
         });
     }
 
-    public Map<String, Object> runAction(Action action) {
+    public HashMap<String, Object> runAction(Action action, HashMap<String, Object> previousOutput) {
         System.out.println("Executing action of type: " + action.getType() + " with data: " + action.getData());
         HashMap<String, Object> output = new HashMap<>();
 
         switch (action.getType()) {
             case RUNONCE:
-                output = time.runOnce(action.getData(), action.getOutput());
+                output = time.runOnce(action, previousOutput);
                 break;
 
             case RUNDAILY:
-                output = time.runDaily(action.getData(), action.getOutput());
+                output = time.runDaily(action, previousOutput);
                 break;
 
             case SENDMAIL:
-                output = googleMail.sendMail(action.getData(), action.getOutput());
+                output = googleMail.sendMail(action, previousOutput);
                 break;
 
             default:

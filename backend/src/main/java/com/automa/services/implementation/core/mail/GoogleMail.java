@@ -9,7 +9,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.automa.entity.action.Action;
 import com.automa.services.implementation.core.ApiHelperService;
+import com.automa.utils.WorkflowUtils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -56,8 +58,10 @@ public class GoogleMail {
         }
     }
 
+    public HashMap<String, Object> sendMail(Action action, HashMap<String, Object> previousOutput) {
+        HashMap<String, Object> data = WorkflowUtils.replaceVariableWithData(action.getData(), previousOutput);
+        HashMap<String, Object> output = action.getOutput();
 
-    public HashMap<String, Object> sendMail(HashMap<String, Object> data, HashMap<String, Object> output) {
         try {
             String apiUrl = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 
@@ -87,7 +91,8 @@ public class GoogleMail {
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return null;
+            output.put("sent", false);
+            return output;
         }
     }
 
