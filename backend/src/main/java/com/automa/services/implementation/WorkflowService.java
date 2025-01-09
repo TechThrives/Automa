@@ -20,10 +20,7 @@ import com.automa.entity.Workflow;
 import com.automa.entity.action.Action;
 import com.automa.entity.action.ActionInfo;
 import com.automa.entity.action.ActionType;
-import com.automa.entity.action.BaseType;
 import com.automa.entity.flow.Flow;
-import com.automa.repository.ActionRepository;
-import com.automa.repository.FlowRepository;
 import com.automa.repository.WorkflowRepository;
 import com.automa.services.interfaces.IWorkflow;
 import com.automa.utils.ContextUtils;
@@ -35,20 +32,14 @@ public class WorkflowService implements IWorkflow {
 
     private final WorkflowRepository workflowRepository;
     private final ApplicationUserService applicationUserService;
-    private final ActionRepository actionRepository;
     private final ActionInfoService actionInfoService;
-    private final FlowRepository flowRepository;
 
     public WorkflowService(WorkflowRepository workflowRepository,
             ApplicationUserService applicationUserService,
-            ActionInfoService actionInfoService,
-            ActionRepository actionRepository,
-            FlowRepository flowRepository) {
+            ActionInfoService actionInfoService) {
         this.workflowRepository = workflowRepository;
         this.applicationUserService = applicationUserService;
         this.actionInfoService = actionInfoService;
-        this.flowRepository = flowRepository;
-        this.actionRepository = actionRepository;
     }
 
     @Override
@@ -231,9 +222,6 @@ public class WorkflowService implements IWorkflow {
     @Override
     public List<WorkflowResponse> findByUser() {
         List<Workflow> workflows = workflowRepository.findByUser_Email(ContextUtils.getUsername());
-        System.out.println("Found total " + workflows.size() + " workflows.");
-        System.out.println("Found total " + actionRepository.findAll().size() + " actions.");
-        System.out.println("Found total " + flowRepository.findAll().size() + " flows.");
 
         return workflows.stream().map(workflow -> {
             WorkflowResponse response = new WorkflowResponse();
@@ -251,6 +239,28 @@ public class WorkflowService implements IWorkflow {
             response.setTrigger(trigger);
             return response;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public WorkflowResponse toggleActive(UUID id, boolean isActive) {
+        Workflow workflow = workflowRepository.findById(id).orElseThrow(() -> new RuntimeException("Workflow not found"));
+        workflow.setIsActive(isActive);
+        Workflow updatedWorkflow = workflowRepository.save(workflow);
+
+        WorkflowResponse response = new WorkflowResponse();
+        BeanUtils.copyProperties(updatedWorkflow, response);
+        response.setUser(updatedWorkflow.getUser().getUsername());
+        List<ActionType> actions = updatedWorkflow.getActions()
+                .stream().map(action -> action.getType()).collect(Collectors.toList());
+        response.setActions(actions);
+        ActionRequestResponse trigger = new ActionRequestResponse();
+        if (updatedWorkflow.getTrigger() != null) {
+            trigger.setId(updatedWorkflow.getTrigger().getId());
+            trigger.setType(updatedWorkflow.getTrigger().getType());
+            trigger.setData(updatedWorkflow.getTrigger().getData());
+        }
+        response.setTrigger(trigger);
+        return response;
     }
 
 }

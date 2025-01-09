@@ -14,4 +14,6 @@ public interface IWorkflow {
     WorkflowRequestResponse save(WorkflowRequestResponse request);
 
     List<WorkflowResponse> findByUser();
+
+    WorkflowResponse toggleActive(UUID id, boolean isActive);
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardCard from "../../components/cards/DashboardCard";
 import { IoPlayOutline } from "react-icons/io5";
@@ -6,6 +6,7 @@ import { MdOutlineAccountTree } from "react-icons/md";
 import { FiEye } from "react-icons/fi";
 import { ActionIcon } from "../../constants/ActionUtils";
 import axiosConfig from "../../utils/axiosConfig";
+import toast from "react-hot-toast";
 
 const WorkflowOverview = () => {
   const [workflows, setWorkflows] = useState([]);
@@ -25,12 +26,40 @@ const WorkflowOverview = () => {
     fetchWorkflows();
   }, []);
 
+  const handleActiveChange = async (e, workflowId) => {
+    try {
+      const updatedStatus = e.target.checked;
+
+      const response = await axiosConfig.post(
+        `/api/workflow/${workflowId}/toggle?isActive=${updatedStatus}`,
+      );
+
+      const updatedWorkflows = workflows.map((workflow) => {
+        if (workflow.id === workflowId) {
+          return response.data;
+        }
+        return workflow;
+      });
+
+      setWorkflows(updatedWorkflows);
+      toast.success(
+        `Workflow has been ${updatedStatus ? "activated" : "deactivated"}.`,
+      );
+    } catch (error) {
+      toast.error("Failed to update workflow status.");
+    }
+  };
+
+  const runCount = useMemo(() => {
+    return workflows.reduce((total, workflow) => total + workflow.runs, 0);
+  }, [workflows]);
+
   return (
     <>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <DashboardCard
           title="Total Runs"
-          value="71,897"
+          value={runCount}
           icon={<IoPlayOutline className="h-6 w-6 text-white" />}
           color="bg-indigo-500"
         />
@@ -49,6 +78,8 @@ const WorkflowOverview = () => {
                 <th className="px-4 py-2 text-left">Workflow Name</th>
                 <th className="px-4 py-2 text-left">Trigger Action</th>
                 <th className="px-4 py-2 text-left">Workflow Actions</th>
+                <th className="px-4 py-2 text-left">Runs</th>
+                <th className="px-4 py-2 text-left">Active</th>
                 <th className="px-4 py-2 text-center">Options</th>
               </tr>
             </thead>
@@ -72,6 +103,25 @@ const WorkflowOverview = () => {
                           <ActionIcon key={idx} actionType={actionType} />
                         ))}
                       </div>
+                    </td>
+                    <td className="px-4 py-2">{workflow.runs}</td>
+                    <td className="px-4 py-2">
+                      <label
+                        htmlFor="toggle"
+                        className="flex cursor-pointer select-none items-center"
+                      >
+                        <div className="relative">
+                          <input
+                            type="checkbox"
+                            id="toggle"
+                            className="peer sr-only"
+                            checked={workflow.isActive}
+                            onChange={(e) => handleActiveChange(e, workflow.id)}
+                          />
+                          <div className="block h-6 w-10 rounded-full bg-gray-300"></div>
+                          <div className="absolute left-1 top-1 h-4 w-4 rounded-full bg-gray-600 transition peer-checked:translate-x-full peer-checked:bg-green-500"></div>
+                        </div>
+                      </label>
                     </td>
                     <td className="px-4 py-2">
                       <div className="flex justify-center text-center">

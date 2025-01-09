@@ -31,6 +31,9 @@ public class ApplicationUserService implements IApplicationUser {
                 .map(user -> {
                     ApplicationUserResponse response = new ApplicationUserResponse();
                     BeanUtils.copyProperties(user, response);
+                    response.setWorkflows(user.getWorkflows().size());
+                    response.setWorkflowRuns(
+                            user.getWorkflows().stream().map(workflow -> workflow.getRuns()).reduce(0, Integer::sum));
                     return response;
                 })
                 .collect(Collectors.toList());
@@ -41,9 +44,13 @@ public class ApplicationUserService implements IApplicationUser {
         ApplicationUser user = applicationUserRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User Not Found!!!"));
 
-            ApplicationUserResponse response = new ApplicationUserResponse();
-            BeanUtils.copyProperties(user, response);
-            return response;
+        ApplicationUserResponse response = new ApplicationUserResponse();
+        BeanUtils.copyProperties(user, response);
+        response.setWorkflows(user.getWorkflows().size());
+        response.setWorkflowRuns(
+                user.getWorkflows().stream().map(workflow -> workflow.getRuns()).reduce(0, Integer::sum));
+
+        return response;
     }
 
     public ApplicationUser findByEmail(String username) {
@@ -57,9 +64,12 @@ public class ApplicationUserService implements IApplicationUser {
         ApplicationUser user = applicationUserRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User Not Found!!!"));
 
-            ApplicationUserResponse response = new ApplicationUserResponse();
-            BeanUtils.copyProperties(user, response);
-            return response;
+        ApplicationUserResponse response = new ApplicationUserResponse();
+        BeanUtils.copyProperties(user, response);
+        response.setWorkflows(user.getWorkflows().size());
+        response.setWorkflowRuns(
+                user.getWorkflows().stream().map(workflow -> workflow.getRuns()).reduce(0, Integer::sum));
+        return response;
     }
 
 }

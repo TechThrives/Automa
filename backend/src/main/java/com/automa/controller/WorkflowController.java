@@ -46,10 +46,14 @@ public class WorkflowController {
         return new ResponseEntity<>(workflowService.findByUser(), HttpStatus.OK);
     }
     
-
     @GetMapping("/all")
     public ResponseEntity<List<WorkflowResponse>> getWorkflows() {
         return new ResponseEntity<>(workflowService.findAll(), HttpStatus.OK);
     }
 
+    @PostMapping("/{id}/toggle")
+    public ResponseEntity<WorkflowResponse> toggleActive(@Valid @PathVariable UUID id, boolean isActive) {
+        return new ResponseEntity<>(workflowService.toggleActive(id, isActive), HttpStatus.OK);
+    }
+    
 }

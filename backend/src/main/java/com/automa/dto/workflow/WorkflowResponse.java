@@ -13,6 +13,7 @@ public class WorkflowResponse {
     private UUID id;
     private String name;
     private List<ActionType> actions;
+    private Integer runs;
     private ActionRequestResponse trigger;
     private Boolean isActive;
     private String user;

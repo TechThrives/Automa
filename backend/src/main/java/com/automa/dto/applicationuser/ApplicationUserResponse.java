@@ -15,4 +15,6 @@ public class ApplicationUserResponse {
     private String email;
     private String phoneNumber;
     private Integer credits;
+    private Integer workflows;
+    private Integer workflowRuns;
 }

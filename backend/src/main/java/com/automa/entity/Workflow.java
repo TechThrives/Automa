@@ -22,6 +22,9 @@ public class Workflow {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
+    private Integer runs = 0;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
@@ -41,6 +44,6 @@ public class Workflow {
     private Action trigger;
 
     @Column(nullable = false)
-    private Boolean isActive = false;
+    private Boolean isActive = true;
 }
 
