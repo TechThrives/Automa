@@ -17,7 +17,7 @@ import com.automa.services.implementation.NotificationService;
 
 @RestController
 @Validated
-@RequestMapping("/api/notifications")
+@RequestMapping("/api/notification")
 public class NotificationController {
 
     private final NotificationService notificationService;

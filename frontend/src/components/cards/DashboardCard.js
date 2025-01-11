@@ -2,7 +2,7 @@ import React from "react";
 
 const DashboardCard = ({ title, value, icon, color }) => {
   return (
-    <div className="overflow-hidden rounded-lg bg-white shadow-lg">
+    <div className="overflow-hidden rounded-lg bg-white shadow-lg select-none">
       <div className="p-5">
         <div className="flex items-center">
           <div className={`flex-shrink-0 ${color} rounded-md p-3`}>{icon}</div>

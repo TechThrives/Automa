@@ -72,7 +72,7 @@ const WorkflowOverview = () => {
       </div>
       <div className="mb-6 mt-4 flex w-full min-w-0 flex-col break-words rounded-lg bg-white p-4 shadow-lg">
         <div className="overflow-x-auto">
-          <table className="min-w-full overflow-hidden rounded-lg bg-white shadow-md">
+          <table className="min-w-full overflow-hidden rounded-lg bg-white shadow-md select-none">
             <thead>
               <tr className="bg-gray-200 text-gray-600">
                 <th className="px-4 py-2 text-left">Workflow Name</th>
@@ -83,7 +83,7 @@ const WorkflowOverview = () => {
                 <th className="px-4 py-2 text-center">Options</th>
               </tr>
             </thead>
-            <tbody className="select-none">
+            <tbody>
               {workflows.map((workflow, index) => {
                 return (
                   <tr
@@ -108,7 +108,7 @@ const WorkflowOverview = () => {
                     <td className="px-4 py-2">
                       <label
                         htmlFor="toggle"
-                        className="flex cursor-pointer select-none items-center"
+                        className="flex cursor-pointer items-center"
                       >
                         <div className="relative">
                           <input

@@ -9,7 +9,7 @@ const ToastContainer = () => {
       containerClassName=""
       containerStyle={{}}
       toastOptions={{
-        className: "text-sm md:text-md",
+        className: "text-sm md:text-md select-none",
         duration: 3000,
       }}
     />

@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.automa.dto.notification.NotificationRequest;
 import com.automa.entity.ApplicationUser;
 import com.automa.entity.Workflow;
 import com.automa.entity.action.Action;
 import com.automa.entity.credential.GoogleCredential;
 import com.automa.repository.ApplicationUserRepository;
 import com.automa.repository.WorkflowRepository;
+import com.automa.services.implementation.NotificationService;
 import com.automa.services.implementation.core.mail.GoogleMail;
 import com.automa.services.implementation.core.schedule.Time;
 import com.automa.utils.ServiceContext;
@@ -22,14 +24,17 @@ public class WorkflowRunner {
 
     private final WorkflowRepository workflowRepository;
     private final ApplicationUserRepository applicationUserRepository;
+    private final NotificationService notificationService;
     private final Time time;
     private final GoogleMail googleMail;
 
     public WorkflowRunner(WorkflowRepository workflowRepository,
             ApplicationUserRepository applicationUserRepository,
+            NotificationService notificationService,
             Time time, GoogleMail googleMail) {
         this.workflowRepository = workflowRepository;
         this.applicationUserRepository = applicationUserRepository;
+        this.notificationService = notificationService;
         this.time = time;
         this.googleMail = googleMail;
     }
@@ -78,10 +83,24 @@ public class WorkflowRunner {
 
             } else {
                 System.out.println("Google credentials not found for user: " + user.getEmail());
+
+                NotificationRequest notificationRequest = new NotificationRequest();
+                notificationRequest.setEmail(user.getEmail());
+                notificationRequest.setTitle("Workflow Error: " + workflow.getName());
+                notificationRequest.setMessage("Google credentials not configured.");
+                notificationService.save(notificationRequest);
+
                 workflow.setIsActive(false);
             }
         } else {
             System.out.println("Insufficient credits for user: " + user.getEmail());
+
+            NotificationRequest notificationRequest = new NotificationRequest();
+            notificationRequest.setEmail(user.getEmail());
+            notificationRequest.setTitle("Workflow Error: " + workflow.getName());
+            notificationRequest.setMessage("Insufficient credits.");
+            notificationService.save(notificationRequest);
+
             workflow.setIsActive(false);
         }
 
