@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.automa.entity.credential.GoogleCredential;
+import com.automa.entity.payment.Payment;
 
 import jakarta.persistence.*;
 import lombok.*;
