@@ -20,6 +20,7 @@ const WorkflowOverview = () => {
         setWorkflows(response.data);
       } catch (error) {
         console.error("Error fetching workflows:", error);
+        toast.error("Error fetching workflows");
       }
     };
 

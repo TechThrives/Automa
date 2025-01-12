@@ -8,17 +8,28 @@ import {
   FiChevronUp,
   FiUser,
   FiLogOut,
+  FiShoppingCart,
 } from "react-icons/fi";
+import { BsCashStack } from "react-icons/bs";
 import { GoWorkflow } from "react-icons/go";
 import { IoMdClose } from "react-icons/io";
 import { useAppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 
 const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
-  const [isExpanded, setIsExpanded] = useState(
-    window.innerWidth > 768 ? false : true
+  const savedIsExpanded = window.innerWidth > 768 ? false : true;
+  const initialIsExpanded =
+    localStorage.getItem("isExpanded") === "true" ? true : savedIsExpanded;
+
+  const savedExpandedSubMenus = localStorage.getItem("expandedSubMenus");
+  const initialExpandedSubMenus = savedExpandedSubMenus
+    ? JSON.parse(savedExpandedSubMenus)
+    : {};
+
+  const [isExpanded, setIsExpanded] = useState(initialIsExpanded);
+  const [expandedSubMenus, setExpandedSubMenus] = useState(
+    initialExpandedSubMenus,
   );
-  const [expandedSubMenus, setExpandedSubMenus] = useState({});
   const [activeMenu, setActiveMenu] = useState(null);
   const sidebarRef = useRef(null);
   const navigate = useNavigate();
@@ -26,17 +37,25 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
   const { handleLogout } = useAppContext();
 
   const menuItems = [
-    {
-      name: "Dashboard",
-      icon: FiHome,
-      href: "/dashboard",
-    },
+    { name: "Dashboard", icon: FiHome, href: "/dashboard" },
     {
       name: "Workflow",
       icon: GoWorkflow,
       subItems: [
         { name: "Overview", href: "overview", icon: FiPieChart },
         { name: "Create New", href: "workflow", icon: FiPlus },
+      ],
+    },
+    {
+      name: "Payments",
+      icon: BsCashStack,
+      subItems: [
+        { name: "Overview", href: "/dashboard/payments", icon: FiPieChart },
+        {
+          name: "Buy Credits",
+          href: "/dashboard/payment",
+          icon: FiShoppingCart,
+        },
       ],
     },
     {
@@ -50,6 +69,14 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
     },
   ];
 
+  useEffect(() => {
+    localStorage.setItem("isExpanded", isExpanded);
+  }, [isExpanded]);
+
+  useEffect(() => {
+    localStorage.setItem("expandedSubMenus", JSON.stringify(expandedSubMenus));
+  }, [expandedSubMenus]);
+
   const toggleSidebar = () => {
     if (window.innerWidth > 768) {
       setIsExpanded(!isExpanded);
@@ -60,10 +87,7 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
   };
 
   const toggleSubMenu = (menuName) => {
-    setExpandedSubMenus((prev) => ({
-      ...prev,
-      [menuName]: !prev[menuName],
-    }));
+    setExpandedSubMenus((prev) => ({ ...prev, [menuName]: !prev[menuName] }));
     setActiveMenu(menuName);
   };
 
@@ -105,9 +129,7 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
   return (
     <div
       ref={sidebarRef}
-      className={`fixed md:static inset-y-0 left-0 z-30 flex flex-col justify-between bg-white text-gray-800 transition-all duration-300 ease-in-out ${
-        isExpanded ? "w-64" : "w-20"
-      } ${
+      className={`fixed inset-y-0 left-0 z-30 flex flex-col justify-between bg-white text-gray-800 transition-all duration-300 ease-in-out md:static ${isExpanded ? "w-64" : "w-20"} ${
         isMobileMenuOpen
           ? "translate-x-0"
           : "-translate-x-full md:translate-x-0"
@@ -115,21 +137,19 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
     >
       <div>
         <div
-          className={`flex items-center ${
-            isExpanded ? "justify-between pl-5" : "justify-center"
-          } p-4`}
+          className={`flex items-center ${isExpanded ? "justify-between pl-5" : "justify-center"} p-4`}
         >
           {isExpanded && <span className="text-xl font-semibold">Menu</span>}
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-md hover:bg-gray-200"
+            className="rounded-md p-2 hover:bg-gray-200"
             aria-label="Toggle sidebar"
           >
             {isExpanded ? <IoMdClose size={24} /> : <FiMenu size={24} />}
           </button>
         </div>
         <nav>
-          <ul className="space-y-2 py-4">
+          <ul className="hide-scrollbar max-h-[85vh] space-y-2 overflow-y-auto py-4">
             {menuItems.map((item) => (
               <li key={item.name} className="relative">
                 <div className="px-4">
@@ -137,13 +157,11 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
                     <div>
                       <button
                         onClick={() => toggleSubMenu(item.name)}
-                        className={`flex items-center w-full p-2 rounded-md hover:bg-gray-200 ${
-                          isExpanded ? "justify-between" : "justify-center"
-                        }`}
+                        className={`flex w-full items-center rounded-md p-2 hover:bg-gray-200 ${isExpanded ? "justify-between" : "justify-center"}`}
                         aria-expanded={expandedSubMenus[item.name]}
                       >
                         <div className="flex items-center">
-                          <item.icon className="w-6 h-6" aria-hidden="true" />
+                          <item.icon className="h-6 w-6" aria-hidden="true" />
                           {isExpanded && (
                             <span className="ml-3">{item.name}</span>
                           )}
@@ -155,22 +173,16 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
                             <FiChevronDown aria-hidden="true" />
                           ))}
                       </button>
-                      {((isExpanded && expandedSubMenus[item.name]) ||
-                        (!isExpanded && activeMenu === item.name)) && (
+                      {(isExpanded && expandedSubMenus[item.name]) ||
+                      (!isExpanded && activeMenu === item.name) ? (
                         <ul
-                          className={`mt-2 space-y-1 max-h-52 overflow-y-auto hide-scrollbar ${
-                            !isExpanded
-                              ? "absolute left-full top-0 ml-2 bg-white rounded-md shadow-lg p-2 min-w-[200px]"
-                              : ""
-                          }`}
+                          className={`hide-scrollbar mt-2 space-y-1 ${!isExpanded ? "fixed left-full -mt-6 ml-2 max-h-52 min-w-[200px] overflow-y-auto rounded-md bg-white p-2 shadow-lg" : ""}`}
                         >
                           {item.subItems.map((subItem) => (
                             <li key={subItem.name}>
                               <button
-                                className="flex w-full items-center pl-10 pr-4 py-2 rounded-md hover:bg-gray-200"
-                                onClick={() => {
-                                  handleMenuItemClick(subItem);
-                                }}
+                                className="flex w-full items-center rounded-md py-2 pl-10 pr-4 hover:bg-gray-200"
+                                onClick={() => handleMenuItemClick(subItem)}
                               >
                                 <subItem.icon
                                   className="mr-2 h-5 w-5"
@@ -181,19 +193,17 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
                             </li>
                           ))}
                         </ul>
-                      )}
+                      ) : null}
                     </div>
                   ) : (
                     <div>
                       <button
-                        className={`flex items-center w-full p-2 rounded-md hover:bg-gray-200 ${
-                          isExpanded ? "justify-between" : "justify-center"
-                        }`}
+                        className={`flex w-full items-center rounded-md p-2 hover:bg-gray-200 ${isExpanded ? "justify-between" : "justify-center"}`}
                         onClick={() => handleMenuItemClick(item)}
                         aria-expanded={expandedSubMenus[item.name]}
                       >
                         <div className="flex items-center">
-                          <item.icon className="w-6 h-6" aria-hidden="true" />
+                          <item.icon className="h-6 w-6" aria-hidden="true" />
                           {isExpanded && (
                             <span className="ml-3">{item.name}</span>
                           )}

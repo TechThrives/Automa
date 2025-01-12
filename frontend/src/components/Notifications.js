@@ -13,6 +13,7 @@ const Notifications = ({ setIsNotificationOpen }) => {
         setNotifications(response.data);
       } catch (error) {
         console.error("Error fetching notifications:", error);
+        toast.error("Error fetching notifications");
       }
     };
 

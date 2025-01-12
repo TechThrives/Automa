@@ -18,7 +18,7 @@ const ComponentSidebar = () => {
         setTrigger(response.data);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error("Error fetching triggers");
     }
   };
 
@@ -29,7 +29,7 @@ const ComponentSidebar = () => {
         setActions(response.data);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error("Error fetching actions");
     }
   };
 

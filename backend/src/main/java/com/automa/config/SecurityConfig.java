@@ -68,7 +68,7 @@ public class SecurityConfig {
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                                 .exceptionHandling(e -> e
-                                                .authenticationEntryPoint((request, response, authException) -> {
+                                                .authenticationEntryPoint((_, response, _) -> {
                                                         response.setContentType("application/json");
                                                         response.setStatus(HttpStatus.UNAUTHORIZED.value());
                                                         MessageResponse messageResponse = new MessageResponse(
@@ -77,7 +77,7 @@ public class SecurityConfig {
                                                         response.getWriter().write(new ObjectMapper()
                                                                         .writeValueAsString(messageResponse));
                                                 })
-                                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                                .accessDeniedHandler((_, response, _) -> {
                                                         response.setContentType("application/json");
                                                         response.setStatus(HttpStatus.FORBIDDEN.value());
                                                         MessageResponse messageResponse = new MessageResponse(

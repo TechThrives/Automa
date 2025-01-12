@@ -15,7 +15,7 @@ export default function Dashboard() {
         title="Revenue"
         value="$24,000"
         icon={<FiDollarSign className="h-6 w-6 text-white" />}
-        color="bg-green-500"
+        color="bg-emerald-500"
       />
       <DashboardCard
         title="Conversion Rate"

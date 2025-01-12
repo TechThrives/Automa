@@ -1,14 +1,17 @@
 package com.automa.services.implementation;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.automa.dto.MessageResponse;
 import com.automa.dto.payment.CheckoutRequest;
+import com.automa.dto.payment.PaymentResponse;
 import com.automa.dto.payment.PaymentSession;
 import com.automa.entity.ApplicationUser;
 import com.automa.entity.payment.Payment;
@@ -72,35 +75,36 @@ public class PaymentService implements IPayment {
     @Override
     public PaymentSession createSession(CheckoutRequest checkoutRequest) throws StripeException {
         ApplicationUser user = applicationUserRepository.findByUsername(ContextUtils.getUsername())
-        .orElseThrow(() -> new RuntimeException("User Not Found"));
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
 
-        int creditsToPurchase = checkoutRequest.getCredits();
+        Integer creditsToPurchase = checkoutRequest.getCredits();
 
         String successURL = frontendUri + "/payment-success?session_id={CHECKOUT_SESSION_ID}";
 
-        BigDecimal unitAmount = new BigDecimal(creditsToPurchase).multiply(new BigDecimal("100"));
+        double unitAmount = creditsToPurchase;
 
-        long unitAmountWithTaxInPaise = unitAmount.longValueExact();
+        System.out.println(creditsToPurchase + "Unit amount: " + unitAmount);
 
         PriceData sessionItemPriceData = PriceData.builder()
-        .setCurrency("inr")
-        .setUnitAmount(unitAmountWithTaxInPaise)
-        .setProductData(
-                PriceData.ProductData.builder()
-                        .setName("Purchase Credits")
-                        .build())
-        .build();
+                .setCurrency("inr")
+                .setUnitAmount((long) (unitAmount * 100))
+                .setProductData(
+                        PriceData.ProductData.builder()
+                                .setName("Purchase Credits")
+                                .build())
+                .build();
 
         LineItem sessionItem = LineItem.builder()
-        .setPriceData(sessionItemPriceData)
-        .setQuantity(1L)
-        .build(); ;
+                .setPriceData(sessionItemPriceData)
+                .setQuantity(1L)
+                .build();
+        ;
 
         Customer customer = getOrCreateCustomer(user);
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("creditsToPurchase", String.valueOf(creditsToPurchase));
-        metadata.put("grandTotal", String.valueOf(unitAmountWithTaxInPaise));
+        metadata.put("grandTotal", String.valueOf((int) (unitAmount)));
 
         SessionCreateParams params = SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
@@ -116,40 +120,62 @@ public class PaymentService implements IPayment {
         Session session = Session.create(params);
 
         PaymentSession paymentSession = new PaymentSession();
+
         paymentSession.setSessionId(session.getId());
 
         return paymentSession;
     }
 
     @Override
-    public void processCreditPurchase(String sessionId) throws StripeException {
+    public MessageResponse processCreditPurchase(String sessionId) throws StripeException {
         Session session = Session.retrieve(sessionId);
 
         Map<String, String> metadata = session.getMetadata();
-        int creditsPurchased = Integer.parseInt(metadata.get("creditsToPurchase"));
+        Integer creditsPurchased = Integer.parseInt(metadata.get("creditsToPurchase"));
+        Integer grandTotal = Integer.parseInt(metadata.get("grandTotal"));
 
         ApplicationUser user = applicationUserRepository.findByUsername(ContextUtils.getUsername())
-        .orElseThrow(() -> new RuntimeException("User Not Found"));
-        
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+
         user.setCredits(user.getCredits() + creditsPurchased);
         applicationUserRepository.save(user);
 
-        // Save the transaction details to the database
-        Payment payment = new Payment();
-        payment.setUser(user);
-        payment.setSessionId(sessionId);
-        payment.setCreditsPurchased(creditsPurchased);
-        payment.setGrandTotal(Integer.parseInt(metadata.get("grandTotal")));
-        payment.setStatus(mapPaymentStatus(session));
+        Payment payment = paymentRepository.findBySessionId(sessionId);
+
+        if (payment != null) {
+            return new MessageResponse("Payment already processed");
+        }
+
+        Payment newPayment = new Payment();
+        newPayment.setUser(user);
+        newPayment.setSessionId(sessionId);
+        newPayment.setCreditsPurchased(creditsPurchased);
+        newPayment.setGrandTotal(grandTotal);
+        newPayment.setStatus(mapPaymentStatus(session));
 
         PaymentIntentRetrieveParams params = PaymentIntentRetrieveParams.builder().build();
         PaymentIntent paymentIntent = PaymentIntent.retrieve(session.getPaymentIntent(), params, null);
         String paymentMethodId = paymentIntent.getPaymentMethod();
         PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
 
-        payment.setMethod(mapPaymentMethod(paymentMethod));
+        newPayment.setMethod(mapPaymentMethod(paymentMethod));
 
-        paymentRepository.save(payment);
+        paymentRepository.save(newPayment);
+
+        return new MessageResponse("Payment successful");
+
+    }
+
+    @Override
+    public List<PaymentResponse> findByUser() {
+        ApplicationUser user = applicationUserRepository.findByUsername(ContextUtils.getUsername())
+                .orElseThrow(() -> new RuntimeException("User Not Found"));
+        return paymentRepository.findByUser(user).stream().map(payment -> {
+            PaymentResponse response = new PaymentResponse();
+            BeanUtils.copyProperties(payment, response);
+            return response;
+        }
+        ).toList();
     }
 
     public PaymentStatus mapPaymentStatus(Session session) {
