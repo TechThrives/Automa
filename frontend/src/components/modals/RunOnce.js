@@ -40,7 +40,7 @@ const RunOnce = () => {
           name="dateTime"
           value={dateTime}
           onChange={handleDateTimeChange}
-          className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+          className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 ${
             isValid ? "border-gray-300" : "border-red-500"
           }`}
           placeholder="Schedule Time"
@@ -54,7 +54,7 @@ const RunOnce = () => {
       <div className="flex justify-end space-x-2">
         <button
           type="submit"
-          className="px-3 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-1 text-xs bg-teal-600 text-white rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
           disabled={!isValid}
         >
           Submit

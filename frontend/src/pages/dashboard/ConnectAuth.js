@@ -8,12 +8,15 @@ const ConnectAuth = () => {
       "https://www.googleapis.com/auth/userinfo.profile",
       "https://www.googleapis.com/auth/userinfo.email",
       "https://www.googleapis.com/auth/gmail.readonly",
-      // "https://www.googleapis.com/auth/youtube.upload",
+      "https://www.googleapis.com/auth/youtube.upload",
       "https://mail.google.com",
       "https://www.googleapis.com/auth/drive",
       "https://www.googleapis.com/auth/youtube.readonly",
       // "https://www.googleapis.com/auth/youtube.force-ssl",
       // "https://www.googleapis.com/auth/youtube",
+      "https://www.googleapis.com/auth/generative-language.tuning",
+      "https://www.googleapis.com/auth/cloud-vision",
+      // "https://www.googleapis.com/auth/cloud-platform",
     ],
     accessType: "offline",
     includeGrantedScopes: true,
@@ -43,12 +46,12 @@ const ConnectAuth = () => {
       const popup = window.open(
         oauthUrl,
         "GoogleLogin",
-        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes`
+        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes`,
       );
 
       if (!popup) {
         throw new Error(
-          "Failed to open popup window. Please check if popups are blocked."
+          "Failed to open popup window. Please check if popups are blocked.",
         );
       }
     } catch (error) {
@@ -57,10 +60,10 @@ const ConnectAuth = () => {
   }, []);
 
   return (
-    <div className="space-y-4">
+    <div className="flex items-center justify-center">
       <button
         onClick={handleLogin}
-        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        className="rounded-md bg-teal-600 px-4 py-2 text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
       >
         Sign in with Google
       </button>

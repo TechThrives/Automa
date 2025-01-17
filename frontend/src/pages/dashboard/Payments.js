@@ -73,6 +73,13 @@ const Payments = () => {
               </tr>
             </thead>
             <tbody>
+            {payments.length === 0 && (
+                <tr>
+                  <td className="px-4 py-2 text-center font-medium text-gray-600" colSpan="5">
+                    No payments found.
+                  </td>
+                </tr>
+              )}
               {payments.map((payment, index) => {
                 return (
                   <tr

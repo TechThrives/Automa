@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import axiosConfig from "../../utils/axiosConfig";
 import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
@@ -39,17 +39,17 @@ export default function SignIn() {
     <Navigate to="/dashboard" />
   ) : (
     <div className="flex min-h-screen bg-gray-50">
-      <div className="flex flex-col w-full max-w-md mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="flex items-center justify-center gap-2 mb-6">
+      <div className="mx-auto flex w-full max-w-md flex-col p-4 sm:p-6 lg:p-8">
+        <div className="mb-6 mt-6 flex flex-col items-center justify-center gap-2">
           <img
-            src="https://www.pipeline-conference.com/sites/default/files/2024-02/Automa%20600%20400.png"
+            src="/logo-full.png"
             alt="Automa Logo"
-            className="w-8 h-8 rounded-full"
+            className="h-12 w-12 rounded-xl"
           />
           <span className="text-lg font-semibold">Automa</span>
         </div>
 
-        <h1 className="text-xl font-semibold mb-4 text-center">Sign In</h1>
+        <h1 className="mb-4 text-center text-xl font-semibold">Sign In</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1">
@@ -65,7 +65,7 @@ export default function SignIn() {
               type="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full h-9 px-3 py-2 text-[12px] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-[12px] shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
               placeholder="Enter Email"
               required
             />
@@ -85,7 +85,7 @@ export default function SignIn() {
                 type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full h-9 px-3 py-2 text-[12px] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-[12px] shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 placeholder="Enter Password"
                 required
               />
@@ -96,9 +96,9 @@ export default function SignIn() {
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
-                  <FaEyeSlash className="w-4 h-4" />
+                  <FaEyeSlash className="h-4 w-4" />
                 ) : (
-                  <FaEye className="w-4 h-4" />
+                  <FaEye className="h-4 w-4" />
                 )}
               </button>
             </div>
@@ -110,7 +110,7 @@ export default function SignIn() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 rounded border-gray-300 text-teal-600 focus:ring-teal-500"
               />
               <label
                 htmlFor="remember-me"
@@ -120,27 +120,27 @@ export default function SignIn() {
               </label>
             </div>
             <div className="text-xs">
-              <a
-                href="/forgot-password"
-                className="font-medium text-blue-600 hover:text-blue-500"
+              <Link
+                to="/forgot-password"
+                className="font-medium text-teal-600 hover:text-teal-500"
               >
                 Forgot your password?
-              </a>
+              </Link>
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full h-9 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-md"
+            className="h-9 w-full rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
           >
             Sign In
           </button>
 
           <p className="text-center text-xs text-gray-600">
             Don't have an account?{" "}
-            <a href="/signup" className="text-blue-600 hover:underline">
+            <Link to="/signup" className="text-teal-600 hover:underline">
               Sign Up Now
-            </a>
+            </Link>
           </p>
         </form>
       </div>

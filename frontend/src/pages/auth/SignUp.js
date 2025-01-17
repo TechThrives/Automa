@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axiosConfig from "../../utils/axiosConfig";
 import { useAppContext } from "../../context/AppContext";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -44,17 +44,17 @@ export default function SignUp() {
     <Navigate to="/dashboard" />
   ) : (
     <div className="flex min-h-screen bg-gray-50">
-      <div className="flex flex-col w-full max-w-md mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="flex items-center justify-center gap-2 mb-6">
+      <div className="mx-auto flex w-full max-w-md flex-col p-4 sm:p-6 lg:p-8">
+        <div className="mb-6 mt-6 flex flex-col items-center justify-center gap-2">
           <img
-            src="https://www.pipeline-conference.com/sites/default/files/2024-02/Automa%20600%20400.png"
+            src="/logo-full.png"
             alt="Automa Logo"
-            className="w-8 h-8 rounded-full"
+            className="h-12 w-12 rounded-xl"
           />
           <span className="text-lg font-semibold">Automa</span>
         </div>
 
-        <h1 className="text-xl font-semibold mb-4 text-center">Sign Up</h1>
+        <h1 className="mb-4 text-center text-xl font-semibold">Sign Up</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -71,7 +71,7 @@ export default function SignUp() {
                 type="text"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className="w-full h-9 px-3 py-2 text-[12px] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-[12px] shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 placeholder="Enter First Name"
               />
             </div>
@@ -88,7 +88,7 @@ export default function SignUp() {
                 type="text"
                 value={formData.lastName}
                 onChange={handleInputChange}
-                className="w-full h-9 px-3 py-2 text-[12px] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-[12px] shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 placeholder="Enter Last Name"
               />
             </div>
@@ -107,7 +107,7 @@ export default function SignUp() {
               type="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full h-9 px-3 py-2 text-[12px] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-[12px] shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
               placeholder="Enter Email"
             />
           </div>
@@ -125,7 +125,7 @@ export default function SignUp() {
               type="tel"
               value={formData.phoneNumber}
               onChange={handleInputChange}
-              className="w-full h-9 px-3 py-2 text-[12px] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-[12px] shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
               placeholder="Enter Phone Number"
             />
           </div>
@@ -144,7 +144,7 @@ export default function SignUp() {
                 type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full h-9 px-3 py-2 text-[12px] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-[12px] shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 placeholder="Enter Password"
               />
               <button
@@ -154,9 +154,9 @@ export default function SignUp() {
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
-                  <FaEyeSlash className="w-4 h-4" />
+                  <FaEyeSlash className="h-4 w-4" />
                 ) : (
-                  <FaEye className="w-4 h-4" />
+                  <FaEye className="h-4 w-4" />
                 )}
               </button>
             </div>
@@ -176,7 +176,7 @@ export default function SignUp() {
                 type={showConfirmPassword ? "text" : "password"}
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="w-full h-9 px-3 py-2 text-[12px] bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-2 pr-10 text-[12px] shadow-sm focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
                 placeholder="Confirm Password"
               />
               <button
@@ -190,9 +190,9 @@ export default function SignUp() {
                 }
               >
                 {showConfirmPassword ? (
-                  <FaEyeSlash className="w-4 h-4" />
+                  <FaEyeSlash className="h-4 w-4" />
                 ) : (
-                  <FaEye className="w-4 h-4" />
+                  <FaEye className="h-4 w-4" />
                 )}
               </button>
             </div>
@@ -200,16 +200,16 @@ export default function SignUp() {
 
           <button
             type="submit"
-            className="w-full h-9 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-md"
+            className="h-9 w-full rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
           >
             Sign Up
           </button>
 
           <p className="text-center text-xs text-gray-600">
             Already have an account?{" "}
-            <a href="/signin" className="text-blue-600 hover:underline">
+            <Link to="/signin" className="text-teal-600 hover:underline">
               Sign In Now
-            </a>
+            </Link>
           </p>
         </form>
       </div>

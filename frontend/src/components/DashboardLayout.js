@@ -5,6 +5,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAppContext } from "../context/AppContext";
 import { GoBell, GoBellFill } from "react-icons/go";
 import Notifications from "./Notifications";
+import Loader from "./Loader";
 
 const DashboardLayout = () => {
   const location = window.location.pathname;
@@ -41,7 +42,7 @@ const DashboardLayout = () => {
   }, []);
 
   return isLoading ? (
-    <>"Loading ...."</>
+    <Loader />
   ) : user ? (
     <div className="flex h-screen overflow-hidden bg-white">
       <Sidebar

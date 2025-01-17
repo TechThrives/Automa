@@ -1,6 +1,7 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosConfig from "../utils/axiosConfig";
+import Loader from "../components/Loader";
 
 export const AppContext = createContext({});
 
@@ -38,7 +39,7 @@ export function AppProvider({ children }) {
   };
 
   if (isLoading) {
-    return "Loading...";
+    return <Loader />;
   }
 
   return (

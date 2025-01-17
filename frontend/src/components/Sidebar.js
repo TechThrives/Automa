@@ -14,7 +14,7 @@ import { BsCashStack } from "react-icons/bs";
 import { GoWorkflow } from "react-icons/go";
 import { IoMdClose } from "react-icons/io";
 import { useAppContext } from "../context/AppContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
   const savedIsExpanded = window.innerWidth > 768 ? false : true;
@@ -139,7 +139,11 @@ const Sidebar = ({ isMobileMenuOpen, toggleMobileMenu }) => {
         <div
           className={`flex items-center ${isExpanded ? "justify-between pl-5" : "justify-center"} p-4`}
         >
-          {isExpanded && <span className="text-xl font-semibold">Menu</span>}
+          {isExpanded && (
+            <Link to="/" className="flex gap-2 text-xl font-semibold">
+              <img src="/logo.png" alt="Automa" className="h-8" /> Automa
+            </Link>
+          )}
           <button
             onClick={toggleSidebar}
             className="rounded-md p-2 hover:bg-gray-200"

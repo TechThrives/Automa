@@ -2,9 +2,17 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { loadStripe } from "@stripe/stripe-js";
 import axiosConfig from "../../utils/axiosConfig";
+import { useLocation } from "react-router-dom";
 
 const Payment = () => {
-  const [credits, setCredits] = useState(50);
+  const query = new URLSearchParams(useLocation().search);
+  const chosenPackage = query.get("package");
+  const packages = {
+    "Starter": 50,
+    "Pro": 300,
+    "Enterprise": 500
+  }
+  const [credits, setCredits] = useState(packages[chosenPackage] || 50);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -116,7 +124,7 @@ const Payment = () => {
           <button
             onClick={handleSubmit}
             disabled={error || loading}
-            className="h-9 w-full rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400"
+            className="h-9 w-full rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-400"
           >
             {loading ? "Processing..." : "Pay Now"}
           </button>

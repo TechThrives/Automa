@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import axiosConfig from "../../utils/axiosConfig";
 
@@ -50,7 +50,7 @@ const PaymentSuccess = () => {
         </div>
         <div className="mt-5 text-base">
           For any further queries, please contact us at{" "}
-          <a href="mailto: user@example.com">user@example.com</a>
+          <Link to="mailto: user@example.com">user@example.com</Link>
         </div>
       </div>
     </div>

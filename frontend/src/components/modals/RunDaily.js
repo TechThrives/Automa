@@ -34,14 +34,14 @@ const RunDaily = () => {
           name="time"
           value={time}
           onChange={handleTimeChange}
-          className={`w-full rounded-md border px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500`}
+          className={`w-full rounded-md border px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500`}
           placeholder="Select Time"
         />
       </div>
       <div className="flex justify-end space-x-2">
         <button
           type="submit"
-          className="rounded-md bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="rounded-md bg-teal-600 px-3 py-1 text-xs text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
         >
           Submit
         </button>

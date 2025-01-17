@@ -85,6 +85,13 @@ const WorkflowOverview = () => {
               </tr>
             </thead>
             <tbody>
+              {workflows.length === 0 && (
+                <tr>
+                  <td className="px-4 py-2 text-center font-medium text-gray-600" colSpan="6">
+                    No workflows found.
+                  </td>
+                </tr>
+              )}
               {workflows.map((workflow, index) => {
                 return (
                   <tr

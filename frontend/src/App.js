@@ -15,6 +15,8 @@ import WorkflowOverview from "./pages/dashboard/WorkflowOverview";
 import Payment from "./pages/dashboard/Payment";
 import PaymentSuccess from "./pages/dashboard/PaymentSuccess";
 import Payments from "./pages/dashboard/Payments";
+import Landing from "./pages/Landing";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
           {/* Public Routes */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="*" element={<NotFound />} />
 
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>

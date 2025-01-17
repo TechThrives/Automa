@@ -56,7 +56,7 @@ const SendMail = () => {
           name="to"
           value={to}
           onChange={handleToChange}
-          className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+          className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 ${
             isValidTo ? "border-gray-300" : "border-red-500"
           }`}
           placeholder="Enter email address"
@@ -81,7 +81,7 @@ const SendMail = () => {
           name="subject"
           value={subject}
           onChange={handleSubjectChange}
-          className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+          className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 ${
             isValidSubject ? "border-gray-300" : "border-red-500"
           }`}
           placeholder="Enter subject"
@@ -104,7 +104,7 @@ const SendMail = () => {
           name="message"
           value={message}
           onChange={handleMessageChange}
-          className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 ${
+          className={`w-full px-2 py-1 text-sm border rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 ${
             isValidMessage ? "border-gray-300" : "border-red-500"
           }`}
           placeholder="Enter message"
@@ -118,7 +118,7 @@ const SendMail = () => {
       <div className="flex justify-end space-x-2">
         <button
           type="submit"
-          className="px-3 py-1 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-1 text-xs bg-teal-600 text-white rounded-md hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
           disabled={!isValidTo || !isValidSubject || !isValidMessage}
         >
           Submit

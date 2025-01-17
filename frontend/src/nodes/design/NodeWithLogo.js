@@ -11,6 +11,8 @@ const NodeWithLogo = (props) => {
       <p className="w-12 text-wrap text-center text-[6px] font-bold text-gray-800">
         {type}
       </p>
+      <p className="w-12 text-wrap text-center text-[6px] font-bold text-gray-800">{props.positionAbsoluteX}</p>
+      <p className="w-12 text-wrap text-center text-[6px] font-bold text-gray-800">{props.positionAbsoluteY}</p>
 
       {!isTrigger(type) && (
         <Handle
