@@ -116,7 +116,7 @@ public class WorkflowUtils {
                         String dateTimeString = (String) data.get("dateTime");
                         LocalDateTime inputDateTime = LocalDateTime.parse(dateTimeString,
                                 DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                        LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.systemDefault());
+                        LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("Asia/Kolkata"));
                         if (Math.abs(ChronoUnit.MINUTES.between(currentDateTime, inputDateTime)) == 0) {
                             return true;
                         }
@@ -132,7 +132,7 @@ public class WorkflowUtils {
                     if ((Boolean) data.get("active") == true) {
                         String timeString = (String) data.get("time");
                         LocalTime inputTime = LocalTime.parse(timeString);
-                        LocalTime currentTime = LocalTime.now(ZoneId.systemDefault());
+                        LocalTime currentTime = LocalTime.now(ZoneId.of("Asia/Kolkata"));
                         if (Math.abs(ChronoUnit.MINUTES.between(currentTime, inputTime)) == 0) {
                             return true;
                         }

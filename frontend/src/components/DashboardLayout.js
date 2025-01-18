@@ -51,12 +51,12 @@ const DashboardLayout = () => {
       />
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col overflow-hidden select-none">
+      <div className="flex flex-1 select-none flex-col overflow-hidden">
         <header className="z-10 bg-white shadow-sm">
           <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
-                <h1 className="text-2xl font-semibold text-gray-900">
+                <h1 className="hidden text-2xl font-semibold text-gray-900 md:block">
                   {header.title}
                 </h1>
                 <button
@@ -103,7 +103,9 @@ const DashboardLayout = () => {
           </div>
         </header>
 
-        {isNotificationOpen && <Notifications setIsNotificationOpen={setIsNotificationOpen} />}
+        {isNotificationOpen && (
+          <Notifications setIsNotificationOpen={setIsNotificationOpen} />
+        )}
 
         <main className="flex-1 overflow-y-auto bg-gray-100 p-4">
           <div className="mx-auto max-w-7xl">

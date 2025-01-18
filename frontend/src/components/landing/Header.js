@@ -95,18 +95,29 @@ const Header = () => {
               </Link>
             </div>
             <div className="flex flex-col space-y-2 px-2 pb-3 pt-2 text-center">
-              <Link
-                to="/signin"
-                className="w-full rounded-md px-3 py-2 text-base text-gray-600 hover:bg-teal-200 hover:text-gray-800"
-              >
-                Sign in
-              </Link>
-              <Link
-                to="/signup"
-                className="w-full rounded-md bg-teal-500 px-3 py-2 text-white hover:bg-teal-600"
-              >
-                Get started free
-              </Link>
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="w-full rounded-md bg-teal-500 px-3 py-2 text-white hover:bg-teal-600"
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/signin"
+                    className="w-full rounded-md px-3 py-2 text-base text-gray-600 hover:bg-teal-200 hover:text-gray-800"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="w-full rounded-md bg-teal-500 px-3 py-2 text-white hover:bg-teal-600"
+                  >
+                    Get started free
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         )}
