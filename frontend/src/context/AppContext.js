@@ -23,6 +23,7 @@ export function AppProvider({ children }) {
       } catch (error) {
         console.error("Error fetching data:", error);
         setUser(null);
+        localStorage.removeItem("jwtToken");
       } 
     }
     setIsLoading(false);

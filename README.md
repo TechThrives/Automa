@@ -2,7 +2,7 @@
 
 ## Overview
 
-Automa allows users to automate processes by defining **triggers** (events that start a workflow) and **actions** (tasks that are performed automatically once a trigger occurs). It is designed to be highly customizable, supporting multiple workflows and enabling the automation of complex processes.
+Automa allows users to automate processes by defining **triggers** (events that start a workflow) and **actions** (tasks that are performed automatically once a trigger occurs). It is designed to be highly customizable, supporting multiple workflows and enabling the automation of processes.
 
 ## Technologies Used
 
@@ -25,7 +25,7 @@ Automa allows users to automate processes by defining **triggers** (events that 
 
 ## Description
 
-Automa simplifies the process of creating automated workflows by enabling users to set triggers that initiate actions. Users can visually build workflows, add conditions, and configure specific actions such as data transformations or notifications. This platform supports both simple automation tasks and more complex workflows involving multiple steps and dependencies.
+Automa simplifies the process of creating automated workflows by enabling users to set triggers that initiate actions. Users can visually build workflows, add conditions, and configure specific actions such as sending emails, making API requests, and more.
 
 ## Contributing
 

@@ -83,8 +83,6 @@ public class PaymentService implements IPayment {
 
         double unitAmount = creditsToPurchase;
 
-        System.out.println(creditsToPurchase + "Unit amount: " + unitAmount);
-
         PriceData sessionItemPriceData = PriceData.builder()
                 .setCurrency("inr")
                 .setUnitAmount((long) (unitAmount * 100))
