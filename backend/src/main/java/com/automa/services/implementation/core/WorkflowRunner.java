@@ -72,7 +72,8 @@ public class WorkflowRunner {
                 visitedFlows.clear(); // Clear visited flows for each workflow execution
                 Action trigger = workflow.getTrigger();
                 if (trigger != null) {
-                    executeNextActions(trigger, new HashMap<>());
+                    HashMap<String, ArrayList<HashMap<String, Object>>> workflowOutput = new HashMap<>();
+                    executeNextActions(trigger, workflowOutput);
                 }
 
                 ServiceContext.clearContext();
@@ -108,12 +109,15 @@ public class WorkflowRunner {
         workflowRepository.save(workflow);
     }
 
-    private void executeNextActions(Action currentAction, HashMap<String, Object> previousOutput) {
+    private void executeNextActions(Action currentAction,
+            HashMap<String, ArrayList<HashMap<String, Object>>> workflowOutput) {
         if (currentAction == null) {
             return;
         }
 
-        HashMap<String, Object> currentOutput = runAction(currentAction, previousOutput);
+        ArrayList<HashMap<String, Object>> currentOutput = runAction(currentAction, workflowOutput);
+
+        workflowOutput.put(currentAction.getName(), currentOutput);
 
         currentAction.getOutgoingFlows().forEach(flow -> {
             Action nextAction = flow.getTarget();
@@ -122,26 +126,28 @@ public class WorkflowRunner {
 
             if (!visitedFlows.contains(flowKey) && nextAction != null) {
                 visitedFlows.add(flowKey);
-                executeNextActions(nextAction, currentOutput);
+                executeNextActions(nextAction, workflowOutput);
             }
         });
     }
 
-    public HashMap<String, Object> runAction(Action action, HashMap<String, Object> previousOutput) {
-        System.out.println("Executing action of type: " + action.getType() + " with data: " + action.getData());
-        HashMap<String, Object> output = new HashMap<>();
+    public ArrayList<HashMap<String, Object>> runAction(Action action,
+            HashMap<String, ArrayList<HashMap<String, Object>>> workflowOutput) {
+        ArrayList<HashMap<String, Object>> output = new ArrayList<>();
+
+        System.out.println("Running action: " + action.getName());
 
         switch (action.getType()) {
             case RUNONCE:
-                output = time.runOnce(action, previousOutput);
+                output = time.runOnce(action, workflowOutput);
                 break;
 
             case RUNDAILY:
-                output = time.runDaily(action, previousOutput);
+                output = time.runDaily(action, workflowOutput);
                 break;
 
             case SENDMAIL:
-                output = googleMail.sendMail(action, previousOutput);
+                output = googleMail.sendMail(action, workflowOutput);
                 break;
 
             default:

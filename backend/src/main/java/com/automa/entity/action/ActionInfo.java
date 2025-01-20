@@ -1,6 +1,7 @@
 package com.automa.entity.action;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.JdbcTypeCode;
@@ -47,5 +48,5 @@ public class ActionInfo {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
-    private HashMap<String, Object> output;
+    private List<HashMap<String, Object>> output;
 }

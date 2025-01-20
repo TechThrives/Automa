@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useWorkflow } from "../../context/WorkflowContext";
 import { useReactFlow } from "@xyflow/react";
+import useNodes from "../../hooks/useNodes";
 
 const RunDaily = () => {
   const { setNodes } = useReactFlow();
+  const { getName } = useNodes();
   const { selectedNode: node, setIsOpen } = useWorkflow();
   const [time, setTime] = useState(node.data.time);
 
@@ -14,7 +16,12 @@ const RunDaily = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newNode = { ...node, data: { ...node.data, time, active: true } };
+    const name = node.name || getName(node.type);
+    const newNode = {
+      ...node,
+      name: name,
+      data: { ...node.data, time, active: true },
+    };
     setNodes((nds) => nds.concat(newNode));
     setIsOpen(false);
   };

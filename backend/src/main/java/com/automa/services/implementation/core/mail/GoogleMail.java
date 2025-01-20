@@ -1,6 +1,7 @@
 package com.automa.services.implementation.core.mail;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Properties;
@@ -58,42 +59,52 @@ public class GoogleMail {
         }
     }
 
-    public HashMap<String, Object> sendMail(Action action, HashMap<String, Object> previousOutput) {
-        HashMap<String, Object> data = WorkflowUtils.replaceVariableWithData(action.getData(), previousOutput);
-        HashMap<String, Object> output = action.getOutput();
+    public ArrayList<HashMap<String, Object>> sendMail(Action action,
+            HashMap<String, ArrayList<HashMap<String, Object>>> workflowOutput) {
+        ArrayList<HashMap<String, Object>> allData = WorkflowUtils.replaceVariableWithData(action.getData(),
+                workflowOutput);
+        ArrayList<HashMap<String, Object>> outputList = new ArrayList<>();
 
-        try {
-            String apiUrl = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
+        System.out.println(allData);
 
-            MimeMessage email = createEmail(data.get("to").toString(), data.get("subject").toString(), data.get("message").toString());
-            String encodedEmail = Base64.getUrlEncoder().encodeToString(emailToBytes(email));
-            String jsonPayload = "{ \"raw\": \"" + encodedEmail + "\" }";
+        for (HashMap<String, Object> data : allData) {
+            HashMap<String, Object> output = new HashMap<>();
+            try {
+                String apiUrl = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 
-            String responseBody = apiHelperService.executeWithAccessToken(apiUrl, HttpMethod.POST, jsonPayload);
+                MimeMessage email = createEmail(data.get("to").toString(), data.get("subject").toString(),
+                        data.get("message").toString());
+                String encodedEmail = Base64.getUrlEncoder().encodeToString(emailToBytes(email));
+                String jsonPayload = "{ \"raw\": \"" + encodedEmail + "\" }";
 
-            JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
-            JsonArray labelIds = jsonResponse.getAsJsonArray("labelIds");
+                String responseBody = apiHelperService.executeWithAccessToken(apiUrl, HttpMethod.POST, jsonPayload);
 
-            Boolean isSend = false;
+                JsonObject jsonResponse = JsonParser.parseString(responseBody).getAsJsonObject();
+                JsonArray labelIds = jsonResponse.getAsJsonArray("labelIds");
 
-            if (labelIds != null) {
-                for (int i = 0; i < labelIds.size(); i++) {
-                    if ("SENT".equals(labelIds.get(i).getAsString())) {
-                        isSend = true;
-                        break;
+                Boolean isSend = false;
+
+                if (labelIds != null) {
+                    for (int i = 0; i < labelIds.size(); i++) {
+                        if ("SENT".equals(labelIds.get(i).getAsString())) {
+                            isSend = true;
+                            break;
+                        }
                     }
                 }
+
+                output.put("sent", isSend);
+
+                outputList.add(output);
+
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                output.put("sent", false);
+                outputList.add(output);
             }
-
-            output.put("sent", isSend);
-
-            return output;
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            output.put("sent", false);
-            return output;
         }
+        return outputList;
+
     }
 
 }

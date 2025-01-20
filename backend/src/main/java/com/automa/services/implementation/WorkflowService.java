@@ -156,6 +156,7 @@ public class WorkflowService implements IWorkflow {
         for (ActionRequestResponse node : request.getNodes()) {
             Action action = new Action();
             action.setId(node.getId());
+            action.setName(node.getName());
             action.setType(node.getType());
             action.setPositionX(node.getPosition().getX());
             action.setPositionY(node.getPosition().getY());

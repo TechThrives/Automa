@@ -10,9 +10,11 @@
       "subject": "",
       "message": ""
     },
-    "output": {
-      "sent": ""
-    }
+    "output": [
+      {
+        "sent": ""
+      }
+    ]
   },
   {
     "name": "Run Once",
@@ -24,9 +26,11 @@
       "dateTime": "",
       "active": true
     },
-    "output": {
-      "status": ""
-    }
+    "output": [
+      {
+        "status": ""
+      }
+    ]
   },
   {
     "name": "Run Daily",
@@ -38,8 +42,10 @@
       "time": "",
       "active": true
     },
-    "output": {
-      "status": ""
-    }
+    "output": [
+      {
+        "status": ""
+      }
+    ]
   }
 ]

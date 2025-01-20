@@ -21,6 +21,9 @@ public class Action {
     @Column(nullable = false, updatable = false, unique = true)
     private UUID id;
 
+    @Column(nullable = false)
+    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workflow_id", nullable = false)
     @ToString.Exclude
@@ -54,5 +57,5 @@ public class Action {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
-    private HashMap<String, Object> output;
+    private List<HashMap<String, Object>> output;
 }

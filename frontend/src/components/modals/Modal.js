@@ -16,7 +16,7 @@ const Modal = () => {
     if (selectedNode) {
       const previousNodes = getPreviousConnectedNodes(selectedNode.id);
       const previousNodeData = previousNodes.reduce((acc, node) => {
-        return { ...acc, ...node.output };
+        return { ...acc, [node.name]: [ ...node.output ] };
       }, {});
       setPreviousNodesData(previousNodeData);
     }
@@ -26,13 +26,13 @@ const Modal = () => {
     setSelectedNode(null);
   };
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center p-4 z-40">
+    <div className="fixed inset-0 z-40 flex flex-col items-center justify-center bg-black bg-opacity-80 p-4">
       <p className="text-white">
         {Object.entries(previousNodesData).length > 0 &&
           JSON.stringify(previousNodesData, null, 2)}
       </p>
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-sm">
-        <IoCloseSharp className="mt-4 mr-4 float-right" onClick={handleClose} />
+      <div className="w-full max-w-sm rounded-lg bg-white shadow-xl">
+        <IoCloseSharp className="float-right mr-4 mt-4" onClick={handleClose} />
         {selectedNode.type === Triggers.RUNONCE && <RunOnce />}
         {selectedNode.type === Triggers.RUNDAILY && <RunDaily />}
         {selectedNode.type === Actions.SENDMAIL && <SendMail />}

@@ -37,7 +37,6 @@ const useDragAndDrop = () => {
 
       const newNode = {
         id: v4(),
-        name: dragNode.name,
         type: dragNode.actionType,
         position,
         data: dragNode.data,
