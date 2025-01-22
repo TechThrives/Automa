@@ -2,10 +2,12 @@ package com.automa.services.implementation.core;
 
 import java.util.*;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.automa.dto.action.ActionRequestResponse;
 import com.automa.dto.notification.NotificationRequest;
 import com.automa.entity.ApplicationUser;
 import com.automa.entity.Workflow;
@@ -16,6 +18,8 @@ import com.automa.repository.WorkflowRepository;
 import com.automa.services.implementation.NotificationService;
 import com.automa.services.implementation.core.mail.GoogleMail;
 import com.automa.services.implementation.core.schedule.Time;
+import com.automa.services.implementation.core.spreadsheets.GoogleSheets;
+import com.automa.utils.ContextUtils;
 import com.automa.utils.ServiceContext;
 import com.automa.utils.WorkflowUtils;
 
@@ -27,16 +31,18 @@ public class WorkflowRunner {
     private final NotificationService notificationService;
     private final Time time;
     private final GoogleMail googleMail;
+    private final GoogleSheets googleSheets;
 
     public WorkflowRunner(WorkflowRepository workflowRepository,
             ApplicationUserRepository applicationUserRepository,
             NotificationService notificationService,
-            Time time, GoogleMail googleMail) {
+            Time time, GoogleMail googleMail, GoogleSheets googleSheets) {
         this.workflowRepository = workflowRepository;
         this.applicationUserRepository = applicationUserRepository;
         this.notificationService = notificationService;
         this.time = time;
         this.googleMail = googleMail;
+        this.googleSheets = googleSheets;
     }
 
     @Value("${workflow.cost}")
@@ -150,11 +156,34 @@ public class WorkflowRunner {
                 output = googleMail.sendMail(action, workflowOutput);
                 break;
 
+            case READSHEET:
+                output = googleSheets.readSheet(action, workflowOutput);
+                break;
+
             default:
                 System.out.println("Unsupported action type: " + action.getType());
                 break;
         }
 
         return output;
+    }
+
+    public ArrayList<HashMap<String, Object>> runAction(ActionRequestResponse actionRequestResponse) {
+        HashMap<String, ArrayList<HashMap<String, Object>>> workflowOutput = new HashMap<>();
+        ApplicationUser user = applicationUserRepository.findByUsername(ContextUtils.getUsername())
+                .orElseThrow(() -> new RuntimeException("User Not Found!!!"));
+        GoogleCredential googleCredentials = user.getGoogleCredential();
+        if (googleCredentials != null) {
+            ServiceContext.setGoogleCredential(googleCredentials);
+            Action action = new Action();
+            BeanUtils.copyProperties(actionRequestResponse, action);
+            workflowOutput.put(action.getName(), runAction(action, workflowOutput));
+            ServiceContext.clearContext();
+        } else {
+            throw new RuntimeException("Google credentials not found for user: " + user.getEmail());
+        }
+
+        return workflowOutput.get(actionRequestResponse.getName());
+
     }
 }

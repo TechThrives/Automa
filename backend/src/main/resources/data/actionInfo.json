@@ -17,6 +17,27 @@
     ]
   },
   {
+    "name": "Read Spreadsheet",
+    "description": "An action to read data from a spreadsheet.",
+    "type": "ACTION",
+    "actionType": "READSHEET",
+    "scope": "https://www.googleapis.com/auth/drive",
+    "data": {
+      "spreadsheetId": "",
+      "sheetName": "",
+      "from": 1,
+      "to": 5,
+      "filterCol": "",
+      "filterVal": ""
+    },
+    "output": [
+      {
+        "column1": "",
+        "column2": ""
+      }
+    ]
+  },
+  {
     "name": "Run Once",
     "description": "Trigger an action at a specific time.",
     "type": "TRIGGER",

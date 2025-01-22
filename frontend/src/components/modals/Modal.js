@@ -6,6 +6,7 @@ import SendMail from "./SendMail";
 import useNodes from "../../hooks/useNodes";
 import { Actions, Triggers } from "../../constants/ActionUtils";
 import RunDaily from "./RunDaily";
+import ReadSheet from "./ReadSheet";
 
 const Modal = () => {
   const { selectedNode, setIsOpen, setSelectedNode } = useWorkflow();
@@ -36,6 +37,7 @@ const Modal = () => {
         {selectedNode.type === Triggers.RUNONCE && <RunOnce />}
         {selectedNode.type === Triggers.RUNDAILY && <RunDaily />}
         {selectedNode.type === Actions.SENDMAIL && <SendMail />}
+        {selectedNode.type === Actions.READSHEET && <ReadSheet />}
       </div>
     </div>
   );

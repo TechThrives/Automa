@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { useWorkflow } from "../../context/WorkflowContext";
 import { useReactFlow } from "@xyflow/react";
-import useNodes from "../../hooks/useNodes";
 
 const RunOnce = () => {
   const { setNodes } = useReactFlow();
-  const { getName } = useNodes();
   const { selectedNode: node, setIsOpen } = useWorkflow();
-  const [dateTime, setDateTime] = useState(node.data.dateTime);
+  const [data, setData] = useState(node.data);
   const [isValid, setIsValid] = useState(
     new Date(node.data.dateTime) > new Date(),
   );
@@ -15,17 +13,15 @@ const RunOnce = () => {
   const handleDateTimeChange = (e) => {
     const value = e.target.value;
     setIsValid(new Date(value) > new Date());
-    setDateTime(value);
+    setData({ ...data, dateTime: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (isValid) {
-      const name = node.name || getName(node.type);
       const newNode = {
         ...node,
-        name: name,
-        data: { ...node.data, dateTime, active: true },
+        data: { ...data, active: true },
       };
       setNodes((nds) => nds.concat(newNode));
       setIsOpen(false);
@@ -45,7 +41,7 @@ const RunOnce = () => {
           type="datetime-local"
           id="dateTime"
           name="dateTime"
-          value={dateTime}
+          value={data.dateTime}
           onChange={handleDateTimeChange}
           className={`w-full rounded-md border px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-teal-500 ${
             isValid ? "border-gray-300" : "border-red-500"

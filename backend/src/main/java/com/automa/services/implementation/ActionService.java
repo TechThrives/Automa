@@ -1,11 +1,14 @@
 package com.automa.services.implementation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.automa.dto.action.ActionRequestResponse;
 import com.automa.entity.ApplicationUser;
+import com.automa.services.implementation.core.WorkflowRunner;
 import com.automa.services.implementation.core.spreadsheets.GoogleSheets;
 import com.automa.services.interfaces.IAction;
 import com.automa.utils.ContextUtils;
@@ -17,10 +20,18 @@ public class ActionService implements IAction {
 
     private final ApplicationUserService applicationUserService;
     private final GoogleSheets googleSheets;
+    private final WorkflowRunner workflowRunner;
 
-    public ActionService(ApplicationUserService applicationUserService, GoogleSheets googleSheets) {
+    public ActionService(ApplicationUserService applicationUserService, GoogleSheets googleSheets,
+            WorkflowRunner workflowRunner) {
         this.applicationUserService = applicationUserService;
         this.googleSheets = googleSheets;
+        this.workflowRunner = workflowRunner;
+    }
+
+    @Override
+    public ArrayList<HashMap<String, Object>> runAction(ActionRequestResponse actionRequestResponse) {
+        return workflowRunner.runAction(actionRequestResponse);
     }
 
     @Override
